@@ -1,5 +1,5 @@
 #include "odi.h"
-#include "dependencies.h"
+#include "deps.h"
 #include "core/debug.h"
 #include "config.h"
 
