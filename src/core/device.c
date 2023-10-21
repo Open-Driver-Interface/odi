@@ -7,21 +7,21 @@ struct odi_device_info * odi_devices[ODI_MAX_MAJORS] = {0};
 
 //Private functions
 
-struct odi_device_info * add(struct odi_device_info* head, struct odi_device_info* new) {
+struct odi_device_info * odi_add(struct odi_device_info* head, struct odi_device_info* new) {
     if (head == 0) return new;
     head->next = new;
     return head;
 }
 
-struct odi_device_info * remove(struct odi_device_info* head, struct odi_device_info* item) {
+struct odi_device_info * odi_remove(struct odi_device_info* head, struct odi_device_info* item) {
     if (head == 0) return 0;
     if (head == item) return head->next;
-    head->next = remove(head->next, item);
+    head->next = odi_remove(head->next, item);
     return head;
 }
 
 //Careful, this function is thread-unsafe
-u32 find_free_minor(struct odi_device_info* head) {
+u32 odi_find_free_minor(struct odi_device_info* head) {
     if (head == 0) return 0;
     u32 minor = 0;
     struct odi_device_info * current = head;
@@ -109,9 +109,9 @@ struct odi_device_info * odi_device_change_major(u32 major, u32 minor, u32 new_m
     if (major == new_major) return device;
 
     device->major = new_major;
-    device->minor = find_free_minor(odi_devices[new_major]);
-    odi_devices[major] = remove(odi_devices[major], device);
-    odi_devices[new_major] = add(odi_devices[new_major], device);
+    device->minor = odi_find_free_minor(odi_devices[new_major]);
+    odi_devices[major] = odi_remove(odi_devices[major], device);
+    odi_devices[new_major] = odi_add(odi_devices[new_major], device);
     return device;
 }
 
@@ -126,10 +126,10 @@ struct odi_device_info * odi_device_register(u32 major, void* control) {
     if (new == 0) return 0;
     new->valid = 1;
     new->major = major;
-    new->minor = find_free_minor(odi_devices[major]);
+    new->minor = odi_find_free_minor(odi_devices[major]);
     new->control = control;
     new->next = 0;
-    odi_devices[major] = add(odi_devices[major], new);
+    odi_devices[major] = odi_add(odi_devices[major], new);
     return new;
 }
 

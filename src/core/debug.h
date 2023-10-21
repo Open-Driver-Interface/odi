@@ -23,8 +23,8 @@ struct odi_debug_queue {
 };
 
 void odi_debug_append(const char* tag, char * message, ...);
-void odi_debug_flusha();
-void odi_debug_cleara();
+void odi_debug_flusha(void);
+void odi_debug_cleara(void);
 void odi_debug_flush(const char * tag);
 void odi_debug_clear(const char * tag);
 
