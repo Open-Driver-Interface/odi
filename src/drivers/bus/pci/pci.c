@@ -110,7 +110,7 @@ const char* get_vendor_name(u16 vendor_id) {
         case 0x1234:
             return "Bochs";
     }
-    return odi_dep_itoa(vendor_id, 16);
+    return odi_dep_itoa(vendor_id, 0x0, 16);
 }
 
 const char* get_device_class(u8 class) {
@@ -144,7 +144,7 @@ const char* get_device_name(u16 vendor_id, u16 device_id) {
         }
     }
     
-    return odi_dep_itoa(device_id, 16);
+    return odi_dep_itoa(device_id, 0x0, 16);
 }
 
 const char * mass_storage_controller_subclass_name(u8 subclass_code) {
@@ -171,7 +171,7 @@ const char * mass_storage_controller_subclass_name(u8 subclass_code) {
             return "Other";
     }
 
-    return odi_dep_itoa(subclass_code, 16);
+    return odi_dep_itoa(subclass_code, 0x0, 16);
 }
 
 const char* serial_bus_controller_subclass_name(u8 subclass_code){
@@ -199,7 +199,7 @@ const char* serial_bus_controller_subclass_name(u8 subclass_code){
         case 0x80:
             return "SerialBusController - Other";
     }
-    return odi_dep_itoa(subclass_code, 16);
+    return odi_dep_itoa(subclass_code, 0x0, 16);
 }
 
 const char* bridge_device_subclass_name(u8 subclass_code){
@@ -230,7 +230,7 @@ const char* bridge_device_subclass_name(u8 subclass_code){
             return "Other";
     }
 
-    return odi_dep_itoa(subclass_code, 16);
+    return odi_dep_itoa(subclass_code, 0x0, 16);
 }
 
 const char * get_subclass_name(u8 class_code, u8 subclass_code) {
@@ -249,7 +249,7 @@ const char * get_subclass_name(u8 class_code, u8 subclass_code) {
         case 0x0c:
             return serial_bus_controller_subclass_name(subclass_code);
     }
-    return odi_dep_itoa(subclass_code, 16);
+    return odi_dep_itoa(subclass_code, 0x0, 16);
 }
 
 const char* get_prog_interface(u8 class_code, u8 subclass_code, u8 prog_interface){
@@ -307,7 +307,7 @@ const char* get_prog_interface(u8 class_code, u8 subclass_code, u8 prog_interfac
             break;
         }
     }
-    return odi_dep_itoa(prog_interface, 16);
+    return odi_dep_itoa(prog_interface, 0x0, 16);
 }
 
 void trigger_pci_interrupt() {

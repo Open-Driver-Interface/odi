@@ -58,13 +58,13 @@ u8 convert_name(const char * name , struct identifier * identifier) {
 }
 
 //Only in automatic mode
-u32 odi_discover_devices() {
+u32 odi_discover_devices(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI DISCOVER DEVICES REQUEST\n");
     odi_debug_append(ODI_DTAG_ERROR, "Not implemented yet\n");
     return 0;
 }
 
-u32 odi_discover_drivers() {
+u32 odi_discover_drivers(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI DISCOVER DRIVERS REQUEST\n");
     odi_debug_append(ODI_DTAG_ERROR, "Not implemented yet\n");
     return 0;
@@ -175,7 +175,7 @@ void odi_list_devices() {
     odi_debug_flush(ODI_DTAG_INFO);
 }
 
-void odi_list_drivers() {
+void odi_list_drivers(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI LIST DRIVERS REQUEST\n");
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         struct odi_driver_info * driver = odi_driver_get(i);
@@ -185,7 +185,7 @@ void odi_list_drivers() {
     odi_debug_flush(ODI_DTAG_INFO);
 }
 
-void odi_hello() {
+void odi_hello(void) {
     odi_debug_append(ODI_DTAG_INFO, "Hello from ODI!\n");
     odi_debug_flush(ODI_DTAG_INFO);
 }

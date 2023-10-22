@@ -1,5 +1,5 @@
-#ifndef _AHCI_DD_H
-#define _AHCI_DD_H
+#ifndef _DUMMY_DD_H
+#define _DUMMY_DD_H
 
 //This is a sample device driver, it contains the basic
 //strcture to create a device driver. It is not intended
@@ -26,6 +26,6 @@
 
 //This is a way to pack the initialization and exit
 //routines of the driver. It is not required.
-void init_basic(void);
-void exit_basic(void);
+void basic_dd_init(void);
+void basic_dd_exit(void);
 #endif

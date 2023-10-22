@@ -6,8 +6,8 @@
 #include "core/device.h"
 
 //Only in automatic mode
-u32 odi_discover_devices();
-u32 odi_discover_drivers();
+u32 odi_discover_devices(void);
+u32 odi_discover_drivers(void);
 
 //Both available in manual and automatic mode
 void * odi_manual_device_register(u32 major, void* control);
@@ -19,8 +19,8 @@ u64 odi_write(const char * device, u64 offset, u64 size, void * buffer);
 u64 odi_ioctl(const char * device, u64 operation, void * buffer);
 
 //Debug
-void odi_list_devices();
-void odi_list_drivers();
-void odi_hello();
+void odi_list_devices(void);
+void odi_list_drivers(void);
+void odi_hello(void);
 
 #endif
