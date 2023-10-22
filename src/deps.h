@@ -5,7 +5,9 @@
 
 #include "core/types.h"
 
+#include <stddef.h>
 #include <stdarg.h>
+
 typedef va_list odi_va_list;
 
 //Conversion management.
