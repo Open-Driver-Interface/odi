@@ -4,10 +4,10 @@
 #include "core/types.h"
 #include "core/driver.h"
 #include "core/device.h"
+#include "core/autoconf.h"
 
 //Only in automatic mode
-u32 odi_discover_devices(void);
-u32 odi_discover_drivers(void);
+u32 odi_autoconf(void * rsdp);
 
 //Both available in manual and automatic mode
 void * odi_manual_device_register(u32 major, void* control);

@@ -4,7 +4,6 @@
 
 //This includes are not important!
 #include "../../../core/debug.h"
-#include "../../../core/driver.h"
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -51,17 +50,19 @@ struct odi_driver_functions pci_ops = {
     .ioctl = pci_ioctl
 };
 
-void init_pci(void) {
+struct odi_driver_info * init_pci() {
     odi_debug_append(ODI_DTAG_INFO, "PCI DRIVER REGISTER STARTED\n");
     struct odi_driver_info * driver = odi_driver_register(PCI_DD_MAJOR, (void*)&pci_ops, PCI_DD_LICENSE, PCI_DD_VENDOR);
     if (driver == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "PCI DRIVER REGISTER FAILED\n");
-        return;
+        return 0;
     }
 
     ((struct odi_driver_functions*)driver->functions)->init(driver, 0);
 
     odi_debug_append(ODI_DTAG_INFO, "PCI DRIVER REGISTER FINISHED\n");
+
+    return driver;
 }
 
 void exit_pci(void) {

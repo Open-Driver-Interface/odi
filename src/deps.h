@@ -14,6 +14,8 @@ typedef va_list odi_va_list;
 char* odi_dep_itoa(s64 value, char * str, int base);
 s64 odi_dep_atoi(const char * str);
 
+int odi_dep_memcmp(const void *s1, const void *s2, size_t n);
+
 //String management.
 int odi_dep_strcmp(const char* str1, const char* str2);
 int odi_dep_strncmp(const char* str1, const char* str2, int n);

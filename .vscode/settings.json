@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "device.h": "c",
+        "autoconf.h": "c",
+        "types.h": "c"
+    }
+}

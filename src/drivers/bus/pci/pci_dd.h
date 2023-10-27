@@ -2,6 +2,7 @@
 #define _PCI_DD_H
 
 #include "../../../core/types.h"
+#include "../../../core/driver.h"
 
 #define PCI_IOCTL_SCAN_BUS      0x0001
 struct pci_ioctl_scan_bus_control {
@@ -14,6 +15,6 @@ struct pci_ioctl_scan_bus_control {
 #define PCI_DD_NAME       "PCI DRIVER\0"
 #define PCI_DD_MAJOR      86
 
-void init_pci(void);
+struct odi_driver_info * init_pci(void);
 void exit_pci(void);
 #endif

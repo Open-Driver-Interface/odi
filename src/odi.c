@@ -58,15 +58,9 @@ u8 convert_name(const char * name , struct identifier * identifier) {
 }
 
 //Only in automatic mode
-u32 odi_discover_devices(void) {
+u32 odi_autoconf(void * rsdp) {
     odi_debug_append(ODI_DTAG_INFO, "ODI DISCOVER DEVICES REQUEST\n");
-    odi_debug_append(ODI_DTAG_ERROR, "Not implemented yet\n");
-    return 0;
-}
-
-u32 odi_discover_drivers(void) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI DISCOVER DRIVERS REQUEST\n");
-    odi_debug_append(ODI_DTAG_ERROR, "Not implemented yet\n");
+    odi_autoconf_scan(rsdp);
     return 0;
 }
 
