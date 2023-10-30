@@ -21,6 +21,7 @@ u64 odi_ioctl(const char * device, u64 operation, void * buffer);
 //Debug
 void odi_list_devices(void);
 void odi_list_drivers(void);
-void odi_hello(void);
 
+void odi_hello(void);
+void odi_goodbye(void);
 #endif

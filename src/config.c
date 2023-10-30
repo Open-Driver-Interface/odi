@@ -1,5 +1,7 @@
 #include "config.h"
 
+#pragma GCC diagnostic ignored "-Woverride-init"
+
 // Default included drivers configuration
 // Add your drivers here!!!
 
@@ -19,3 +21,21 @@ struct odi_autoconf_pci_major_assignment ODI_DRIVER_AUTOCONF_PCI_MAJOR_ASSIGNMEN
 };
 
 u32 ODI_DRIVER_AUTOCONF_COUNT = 2;
+
+const char* MAJOR_PREFIXES[ODI_MAX_MAJORS] = {
+    [0x0 ... ODI_MAX_MAJORS -1] = "none",
+    [8] = "hd",   // 8
+    [9] = "cd",   // 9
+    [0xa] = "semb", // a
+    [0xb] = "pm",   // b
+    [0xc] = "umsd", // c
+    [0xd] = "usb", // d
+    [0xe] = "tty", // e
+    [0xf] = "kbd", // f
+    [0x10] = "mouse", // 10
+    [0x11] = "net", // 11
+    [86] = "pci",
+    [252] = "ahci",
+    [255] = "basic",
+    [65535] = "unknown"
+};

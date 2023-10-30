@@ -19,7 +19,10 @@ void odi_autoconf_autoinit() {
 
         struct odi_device_info * queue = odi_device_getall(i);
         while (queue != 0) {
-            driver->functions->init(driver, 0, queue->control);
+            if (queue->init == 0) {
+                driver->functions->init(driver, 0, queue->control);
+                queue->init = 1;
+            }
             queue = odi_device_next(queue);
         }
     }
@@ -29,12 +32,10 @@ void odi_autoconf_pci_scan_callback(struct pci_dd_device_header* device, u32 bas
     for (u32 i = 0; i < ODI_DRIVER_AUTOCONF_PCI_MAJOR_ASSIGNMENTS_COUNT; i++) {
         struct odi_autoconf_pci_major_assignment * assignment = &ODI_DRIVER_AUTOCONF_PCI_MAJOR_ASSIGNMENTS[i];
         if (assignment->class == device->class_code && assignment->subclass == device->subclass && assignment->prog_if == device->prog_if) {
-            odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] PCI DEVICE SCAN: FOUND SUPPORTED DEVICE\n");
             odi_device_register(assignment->major, (void*)device, (void*)(u64)base_address);
             return;
         }
     }
-    odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] PCI DEVICE SCAN: NO SUPPORTED DEVICE, USING: %x\n", ODI_AUTOCONF_UNSUPPORTED_MAJOR);
     odi_device_register(ODI_AUTOCONF_UNSUPPORTED_MAJOR, (void*)device, (void*)(u64)base_address);
 }
 
@@ -89,13 +90,9 @@ void odi_autoconf_scan_drivers() {
 }
 
 void odi_autoconf_scan(void * rsdp) {
-    odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] SEARCHING DRIVERS \n");
     odi_autoconf_scan_drivers();
-    odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] SEARCHING PCI DEVICES \n");
     odi_autoconf_scan_pci(rsdp);
-    odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] INITIALIZING DEVICES \n");
     odi_autoconf_autoinit();
-    odi_debug_append(ODI_DTAG_INFO, "[AUTOCONF] DONE \n");
 }
 
 struct odi_device_info * odi_autoconf_get_device(u32 major, u32 minor) {

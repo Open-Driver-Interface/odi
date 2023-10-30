@@ -18,11 +18,11 @@ void * pci_init(void * self, void* iobuff, void* control) {
 void * pci_exit (void * self, void* iobuff, void* control) {
     return 0;
 }
-void * pci_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 pci_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "PCI DRIVER READ\n");
     return 0;
 }
-void * pci_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+u64 pci_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "BAPCISIC DRIVER WRITE\n");
     return 0;
 }

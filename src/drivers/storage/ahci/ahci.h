@@ -97,6 +97,7 @@ struct hba_memory {
 
 struct ahci_port {
     volatile struct hba_port* hba_port;
+    struct hba_memory * abar;
     enum port_type port_type;
     u8 *buffer;
     u8 port_number;
@@ -168,12 +169,12 @@ struct hba_command_table {
 
 void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_count);
 
-u8 identify(struct hba_memory* abar, struct ahci_port* port);
+u8 identify(struct ahci_port* port);
 
-u8 read_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count);
-u8 write_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count);
+u8 read_port(struct ahci_port* port, u64 sector, u32 sector_count);
+u8 write_port(struct ahci_port* port, u64 sector, u32 sector_count);
 
-u8 write_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count);
-u8 read_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count);
+u8 write_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count);
+u8 read_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count);
 
 #endif

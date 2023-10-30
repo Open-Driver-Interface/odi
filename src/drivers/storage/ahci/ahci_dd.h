@@ -461,6 +461,7 @@ struct ahci_sata_ident {
 //Configuration for the ahci driver.
 #define MAX_AHCI_DEVICES 32
 #define MAX_AHCI_PORTS_PER_DEVICE 32
+#define MAX_AHCI_PORTS (MAX_AHCI_DEVICES * MAX_AHCI_PORTS_PER_DEVICE)
 
 //Ioctl codes
 #define AHCI_IOCTL_ATAPI_IDENTIFY   0x01
@@ -479,8 +480,8 @@ struct ahci_sata_ident {
 #define AHCI_DD_NAME_ATA            "AHCI ATA DRIVER\0"
 #define AHCI_DD_NAME_ATAPI          "AHCI ATAPI DRIVER\0"
 #define AHCI_DD_MAJOR               252
-#define AHCI_DD_MAJOR_ATA           253
-#define ACHI_DD_MAJOR_ATAPI         254
+#define AHCI_DD_MAJOR_ATA           8
+#define ACHI_DD_MAJOR_ATAPI         9
 
 //This is a way to pack the initialization and exit
 //routines of the driver. It is not required.

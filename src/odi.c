@@ -3,25 +3,6 @@
 #include "core/debug.h"
 #include "config.h"
 
-//disable -Woverride-init
-#pragma GCC diagnostic ignored "-Woverride-init"
-
-const char* MAJOR_PREFIXES[ODI_MAX_MAJORS] = {
-    [0x0 ... ODI_MAX_MAJORS -1] = "none",
-    [8] = "hd",   // 8
-    [9] = "cd",   // 9
-    [0xa] = "semb", // a
-    [0xb] = "pm",   // b
-    [0xc] = "umsd", // c
-    [0xd] = "usb", // d
-    [0xe] = "tty", // e
-    [0xf] = "kbd", // f
-    [0x10] = "mouse", // 10
-    [0x11] = "net", // 11
-    [86] = "pci",
-    [255] = "basic"
-};
-
 struct identifier {
     u32 major;
     u32 minor;
@@ -56,6 +37,8 @@ u8 convert_name(const char * name , struct identifier * identifier) {
 
     return 0;
 }
+
+
 
 //Only in automatic mode
 u32 odi_autoconf(void * rsdp) {
@@ -92,10 +75,7 @@ u64 odi_read(const char * device, u64 offset, u64 size, void * buffer) {
         return 0;
     }
 
-    //TODO: Make this return the number of bytes written
-    odi_driver_read(device_info->major, buffer, device_info->control, size, offset);
-
-    return 1;
+    return odi_driver_read(device_info->major, buffer, device_info->control, size, offset);
 }
 
 u64 odi_write(const char * device, u64 offset, u64 size, void * buffer) {
@@ -153,10 +133,12 @@ void odi_list_devices() {
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         struct odi_device_info * device = odi_device_getall(i);
         if (device == 0) continue;
-        odi_debug_append(ODI_DTAG_INFO, "[DUMPING MAJOR %d]\n", i);
         
         while (device != 0) {
-            odi_debug_append(ODI_DTAG_INFO, "[DEVICE] MAJ: %d | MIN: %d | INIT: %d | CONTROL: %p | CONTROL_EX: %p | NEXT: %p] \n", device->major, device->minor, device->init, device->control, device->control_ex, device->next);
+            char name[64] = {0};
+            odi_dep_strncpy(name, MAJOR_PREFIXES[device->major], odi_dep_strlen(MAJOR_PREFIXES[device->major]));
+            name[odi_dep_strlen(MAJOR_PREFIXES[device->major])] = '0' + device->minor;
+            odi_debug_append(ODI_DTAG_INFO, "[DEVICE %s] MAJ: %d | MIN: %d | INIT: %d | CONTROL: %p | CONTROL_EX: %p | NEXT: %p] \n", name, device->major, device->minor, device->init, device->control, device->control_ex, device->next);
             device = odi_device_next(device);
         }
     }
@@ -175,5 +157,10 @@ void odi_list_drivers(void) {
 
 void odi_hello(void) {
     odi_debug_append(ODI_DTAG_INFO, "Hello from ODI!\n");
+    odi_debug_flush(ODI_DTAG_INFO);
+}
+
+void odi_goodbye(void) {
+    odi_debug_append(ODI_DTAG_INFO, "Goodbye from ODI!\n");
     odi_debug_flush(ODI_DTAG_INFO);
 }

@@ -16,12 +16,12 @@ void * dd_acpi_exit (void * self, void* iobuff, void* control) {
     return 0;
 }
 
-void * dd_acpi_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 dd_acpi_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "ACPI DRIVER READ\n");
     return 0;
 }
 
-void * dd_acpi_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+u64 dd_acpi_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "ACPI DRIVER WRITE\n");
     return 0;
 }

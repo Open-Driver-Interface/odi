@@ -21,12 +21,12 @@ void * _basic_dd_exit (void * self, void* iobuff, void* control) {
     exit_device(0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 _basic_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER READ\n");
     read_device(0, 0, 0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+u64 _basic_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER WRITE\n");
     write_device(0, 0, 0, 0); //This is the real driver function, it is defined in basic.h
     return 0;

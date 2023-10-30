@@ -12,6 +12,11 @@
 #define ODI_MAX_MINORS 1024
 #define ODI_AUTOCONF_UNSUPPORTED_MAJOR 0xffff
 
+
+//Drivers to be compiled before autoconf can be run.
+#define ODI_DRIVERS_BUS_PCI
+#define ODI_DRIVERS_MISC_ACPI
+
 //Don't touch below this, see config.c
 struct odi_autoconf_pack {
     void * init;
@@ -29,8 +34,7 @@ extern struct odi_autoconf_pci_major_assignment ODI_DRIVER_AUTOCONF_PCI_MAJOR_AS
 extern u32 ODI_DRIVER_AUTOCONF_COUNT;
 extern u32 ODI_DRIVER_AUTOCONF_PCI_MAJOR_ASSIGNMENTS_COUNT;
 
-#define ODI_DRIVERS_BUS_PCI
-#define ODI_DRIVERS_MISC_ACPI
-
+//Name prefixes for devices
+extern const char* MAJOR_PREFIXES[ODI_MAX_MAJORS];
 
 #endif

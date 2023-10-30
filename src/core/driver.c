@@ -63,7 +63,7 @@ void * odi_driver_exit(u32 major, void* iobuff, void* control) {
     return functions->exit(&odi_drivers[major], iobuff, control);
 }
 
-void * odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     if (major >= ODI_MAX_MAJORS) return 0;
     if (odi_drivers[major].major == 0) return 0;
     struct odi_driver_functions * functions = (struct odi_driver_functions *)odi_drivers[major].functions;
@@ -71,7 +71,7 @@ void * odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u6
     return functions->read(&odi_drivers[major], iobuff, control, read_size, read_offset);
 }
 
-void * odi_driver_write(u32 major, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+u64 odi_driver_write(u32 major, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     if (major >= ODI_MAX_MAJORS) return 0;
     if (odi_drivers[major].major == 0) return 0;
     struct odi_driver_functions * functions = (struct odi_driver_functions *)odi_drivers[major].functions;

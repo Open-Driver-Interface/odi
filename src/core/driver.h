@@ -19,8 +19,8 @@
 struct odi_driver_functions {
     void * (*init) (void * self, void* iobuff, void* control);
     void * (*exit) (void * self, void* iobuff, void* control);
-    void * (*read) (void * self, void* iobuff, void* control, u64 read_size,  u64 read_offset);
-    void * (*write)(void * self, void* iobuff, void* control, u64 write_size, u64 write_offset);
+    u64 (*read) (void * self, void* iobuff, void* control, u64 read_size,  u64 read_offset);
+    u64 (*write)(void * self, void* iobuff, void* control, u64 write_size, u64 write_offset);
     void * (*ioctl)(void * self, void* iobuff, void* control, u64 operation);
 } __attribute__((packed));  
 
@@ -52,8 +52,8 @@ struct odi_driver_info * odi_driver_get(u32 major);
 //Exported functions, abstraction layer resides here
 void * odi_driver_init(u32 major, void* iobuff, void* control);
 void * odi_driver_exit(u32 major, void* iobuff, void* control);
-void * odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset);
-void * odi_driver_write(u32 major, void* iobuff, void* control, u64 write_size, u64 write_offset);
+u64 odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset);
+u64 odi_driver_write(u32 major, void* iobuff, void* control, u64 write_size, u64 write_offset);
 void * odi_driver_ioctl(u32 major, void* iobuff, void* control, u64 operation);
 
 #endif

@@ -2,9 +2,9 @@
 #include "../../../deps.h"
 #include "../../../core/debug.h"
 
-s8 find_cmd_slot(struct hba_memory* abar, struct ahci_port* port) {
+s8 find_cmd_slot(struct ahci_port* port) {
     u32 slots = (port->hba_port->sata_active | port->hba_port->command_issue);
-    int cmd_slots = (abar->host_capabilities & 0x0f00) >> 8;
+    int cmd_slots = (port->abar->host_capabilities & 0x0f00) >> 8;
     for (int i = 0; i < cmd_slots; i++) {
         if ((slots & 1) == 0) {
             return i;
@@ -16,12 +16,12 @@ s8 find_cmd_slot(struct hba_memory* abar, struct ahci_port* port) {
     return -1;
 }
 
-u8 identify(struct hba_memory* abar, struct ahci_port* port) {
-    if ((u64)abar == 0) return 0;
+u8 identify(struct ahci_port* port) {
+    if ((u64)port == 0) return 0;
     port->hba_port->interrupt_status = (u32)-1;
 
     int spin = 0;
-    int slot = (int)find_cmd_slot(abar, port);
+    int slot = (int)find_cmd_slot(port);
     if (slot == -1) {
         odi_debug_append(ODI_DTAG_ERROR, "No free command slots\n");
         return 0;
@@ -74,8 +74,7 @@ u8 identify(struct hba_memory* abar, struct ahci_port* port) {
     return 1;
 }
 
-u8 write_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count) {
-    (void)abar;
+u8 write_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count) {
     (void)port;
     (void)sector;
     (void)sector_count;
@@ -83,14 +82,14 @@ u8 write_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector,
     return 0;
 }
 
-u8 read_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count) {
+u8 read_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count) {
     //odi_debug_append(ODI_DTAG_ERROR, "Atapi read issued (port %d, sector %d, sector_count %d)\n", port_no, sector, sector_count);
 
     void* buffer = port->buffer;
 
     port->hba_port->interrupt_status = (u32)-1;
     int spin = 0;
-    int slot = (int)find_cmd_slot(abar, port);
+    int slot = (int)find_cmd_slot(port);
     if (slot == -1) {
         odi_debug_append(ODI_DTAG_ERROR, "No free command slots\n");
         return 0;
@@ -161,14 +160,14 @@ u8 read_atapi_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, 
     return 1;
 }
 
-u8 read_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count) {
+u8 read_port(struct ahci_port* port, u64 sector, u32 sector_count) {
 
     u32 sector_low = (u32)sector;
     u32 sector_high = (u32)(sector >> 32);
 
     port->hba_port->interrupt_status = (u32)-1;
     int spin = 0;
-    int slot = (int)find_cmd_slot(abar, port);
+    int slot = (int)find_cmd_slot(port);
     if (slot == -1) {
         odi_debug_append(ODI_DTAG_ERROR, "No free command slots\n");
         return 0;
@@ -241,14 +240,14 @@ u8 read_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 se
     return 1;
 }
 
-u8 write_port(struct hba_memory* abar, struct ahci_port* port, u64 sector, u32 sector_count) {
+u8 write_port(struct ahci_port* port, u64 sector, u32 sector_count) {
 
     u32 sector_low = (u32)sector;
     u32 sector_high = (u32)(sector >> 32);
 
     port->hba_port->interrupt_status = (u32)-1;
     int spin = 0;
-    int slot = (int)find_cmd_slot(abar, port);
+    int slot = (int)find_cmd_slot(port);
     if (slot == -1) {
         odi_debug_append(ODI_DTAG_ERROR, "No free command slots\n");
         return 0;
@@ -399,6 +398,7 @@ void probe_ports(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * por
                 ahci_ports[*port_count].port_type = port_type;
                 ahci_ports[*port_count].hba_port = &abar->ports[i];
                 ahci_ports[*port_count].port_number = *port_count;
+                ahci_ports[*port_count].abar = abar;
                 (*port_count)++;
             }
         }
@@ -406,7 +406,6 @@ void probe_ports(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * por
 }
 
 void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_count) {
-
     odi_dep_map_current_memory(abar, abar);
     odi_dep_mprotect_current((void*)abar, 4096, ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE | ODI_DEP_MPROTECT_PAGE_WRITE_BIT | ODI_DEP_MPROTECT_PAGE_USER_BIT | ODI_DEP_MPROTECT_PAGE_NX_BIT);
 

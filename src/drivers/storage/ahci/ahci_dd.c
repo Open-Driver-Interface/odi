@@ -1,20 +1,27 @@
 #include "ahci_dd.h"
 #include "ahci.h"
+
+#include "../../bus/pci/pci_dd.h"
+
 #include "../../../core/debug.h"
 #include "../../../core/driver.h"
+#include "../../../core/device.h"
+
+#include "../../../deps.h"
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 struct ahci_device {
     struct hba_memory * abar;
-    struct ahci_port  ahci_ports[MAX_AHCI_PORTS_PER_DEVICE];
+    struct ahci_port ahci_ports[MAX_AHCI_PORTS_PER_DEVICE];
     u8 port_count;
 };
 
 struct ahci_device ahci_devices[MAX_AHCI_DEVICES];
+
 u8 ahci_device_count = 0;
 
-struct ahci_device * get_device_by_abar(void * abar) {
+struct ahci_device * get_device_by_abar(struct hba_memory * abar) {
     for (u8 i = 0; i < ahci_device_count; i++) {
         if (ahci_devices[i].abar == abar) {
             return &ahci_devices[i];
@@ -25,18 +32,40 @@ struct ahci_device * get_device_by_abar(void * abar) {
 }
 
 void * _ahci_dd_init(void * self, void* iobuff, void* control) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER INIT\n");
     return 0;
 }
+
 void * _ahci_dd_exit (void * self, void* iobuff, void* control) {
     return 0;
 }
 
-void * _ahci_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER READ\n");
-    return 0;
+u64 _ahci_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+    struct ahci_port * port = (struct ahci_port*)control;
+    if (port == 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER READ FAILED: PORT IS NULL\n");
+        return 0;
+    }
+
+    if (port->port_type != PORT_TYPE_SATA) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER READ FAILED: PORT IS NOT SATA\n");
+        return 0;
+    }
+    
+    u64 i = 0;
+    
+    while (i < read_size) {
+        if (read_port(port, read_offset+i, 1)) {
+            odi_dep_memcpy(((u8*)iobuff) + (512*i), ((u8*)port->buffer), 512);
+            i++;
+        } else {
+            break;
+        }
+    }
+
+    return i;
 }
-void * _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+
+u64 _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER WRITE\n");
     return 0;
 }
@@ -44,7 +73,7 @@ void * _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size,
 void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) {
     
     struct ahci_device * device = get_device_by_abar(control);
-    if (device == 0 && operation != AHCI_IOCTL_INIT) {
+    if (device == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER IOCTL FAILED: DEVICE NOT INITIALIZED\n");
         return 0;
     }
@@ -60,21 +89,7 @@ void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) 
             break;
         }
         case AHCI_IOCTL_INIT: {
-            if (get_device_by_abar(control) != 0) {
-                odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INIT FAILED: DEVICE ALREADY INITIALIZED\n");
-                return (void*)0;
-            }
-
-            if (ahci_device_count >= MAX_AHCI_DEVICES) {
-                odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INIT FAILED: TOO MANY DEVICES\n");
-                return (void*)0;
-            }
-
-            ahci_devices[ahci_device_count].abar = control;
-            ahci_devices[ahci_device_count].port_count = 0;
-            ahci_device_count++;
-
-            init_ahci(ahci_devices[ahci_device_count].abar, ahci_devices[ahci_device_count].ahci_ports, &ahci_devices[ahci_device_count].port_count);
+            *(u32*)iobuff = 1;
             return (void*)1;
         }
         case AHCI_IOCTL_CTRL_SYNC:
@@ -100,16 +115,16 @@ void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) 
     return (void*)0;
 }
 
-void * _ahci_dd_read_atapi (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 _ahci_dd_read_atapi (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER ATAPI READ\n");
     return 0;
 }
-void * _ahci_dd_write_atapi (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+u64 _ahci_dd_write_atapi (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER ATAPI WRITE\n");
     return 0;
 }
 
-void * _ahci_dd_rw_invalid (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+u64 _ahci_dd_rw_invalid (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER INVALID READ/WRITE ON REGISTRAR DEVICE\n");
     return 0;
 }
@@ -120,11 +135,57 @@ void * _ahci_dd_ioctl_invalid (void * self, void* iobuff, void* control, u64 ope
 }
 
 void * _ahci_dd_init_generic(void * self, void* iobuff, void* control) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER GENERIC INIT\n");
-    return 0;
+    struct pci_dd_device_header * header = (struct pci_dd_device_header*)control;
+    struct hba_memory* abar = (struct hba_memory*)(u64)header->bar5;
+
+    if (get_device_by_abar(abar) != 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INIT FAILED: DEVICE ALREADY INITIALIZED\n");
+        return (void*)0;
+    }
+
+    if (ahci_device_count >= MAX_AHCI_DEVICES) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INIT FAILED: TOO MANY DEVICES\n");
+        return (void*)0;
+    }
+
+    struct ahci_device * device = &ahci_devices[ahci_device_count++];
+
+    device->abar = abar;
+    device->port_count = 0;
+
+    init_ahci(device->abar, device->ahci_ports, &(device->port_count));
+
+    for (u8 i = 0; i < device->port_count; i++) {
+        struct ahci_port * port = &(device->ahci_ports[i]);
+        switch (port->port_type) {
+            case PORT_TYPE_NONE: {
+                break;
+            }
+            case PORT_TYPE_SATA: {
+                odi_device_register(AHCI_DD_MAJOR_ATA, (void*)port, (void*)0x0);
+                break;
+            }
+            case PORT_TYPE_SEMB: {
+                break;
+            }
+            case PORT_TYPE_PM: {
+                break;
+            }
+            case PORT_TYPE_SATAPI: {
+                odi_device_register(ACHI_DD_MAJOR_ATAPI, (void*)port, (void*)0x0);
+                break;
+            }
+            default : {
+                break;
+            }
+        }
+    }
+
+    return (void*)1;
 }
+
 void * _ahci_dd_exit_generic (void * self, void* iobuff, void* control) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER GENERIC INIT\n");
+    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER GENERIC EXIT\n");
     return 0;
 }
 
