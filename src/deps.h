@@ -5,15 +5,10 @@
 
 #include "core/types.h"
 
-#include <stddef.h>
-#include <stdarg.h>
-
 extern u8 ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE;
 extern u8 ODI_DEP_MPROTECT_PAGE_WRITE_BIT; 
 extern u8 ODI_DEP_MPROTECT_PAGE_USER_BIT;
 extern u8 ODI_DEP_MPROTECT_PAGE_NX_BIT;
-
-typedef va_list odi_va_list;
 
 //Conversion management.
 char* odi_dep_itoa(s64 value, char * str, int base);
@@ -58,10 +53,5 @@ u32 odi_dep_inl(u16 port);
 void odi_dep_insw(u16 port, u8* buffer, int count);
 void odi_dep_outsw(u16 port, u8 *buffer, int count);
 void odi_dep_io_wait(void);
-
-//va_start, va_end, va_arg
-#define odi_dep_va_start va_start
-#define odi_dep_va_end va_end
-#define odi_dep_va_arg va_arg
 
 #endif
