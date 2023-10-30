@@ -2,6 +2,10 @@
     "files.associations": {
         "device.h": "c",
         "autoconf.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "basic_dd.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }

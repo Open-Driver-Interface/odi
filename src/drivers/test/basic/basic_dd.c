@@ -13,28 +13,25 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 //Implementation of the driver functions, they can be empty if not used
-void * _basic_dd_init(struct odi_driver_info * self, void* iobuff) {
+void * _basic_dd_init(void * self, void* iobuff, void* control) {
     odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER INIT\n");
-    init_device(0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_exit (struct odi_driver_info * self, void* iobuff) {
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER EXIT\n");
+void * _basic_dd_exit (void * self, void* iobuff, void* control) {
     exit_device(0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_read (struct odi_driver_info * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
+void * _basic_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER READ\n");
     read_device(0, 0, 0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_write (struct odi_driver_info * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+void * _basic_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
     odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER WRITE\n");
     write_device(0, 0, 0, 0); //This is the real driver function, it is defined in basic.h
     return 0;
 }
-void * _basic_dd_ioctl (struct odi_driver_info * self, void* iobuff, void* control, u64 operation) {
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER IOCTL\n");
+void * _basic_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) {
     
     //We call the specific operation with this switch
     switch (operation) {
@@ -66,32 +63,23 @@ struct odi_driver_functions basic_ops = {
 
 //Life cycle functions, they are called by the kernel in manual mode or by the driver in managed mode.
 void basic_dd_init(void) {
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER REGISTER STARTED\n");
     struct odi_driver_info * driver = odi_driver_register(BASIC_DD_MAJOR, (void*)&basic_ops, BASIC_DD_LICENSE, BASIC_DD_VENDOR);
     if (driver == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "BASIC DRIVER REGISTER FAILED\n");
         return;
     }
-
-    ((struct odi_driver_functions*)driver->functions)->init(driver, 0);
-
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER REGISTER FINISHED\n");
 }
 
 void basic_dd_exit(void) {
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER UNREGISTER STARTED\n");
     struct odi_driver_info * driver = odi_driver_get(BASIC_DD_MAJOR);
     if (driver == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "BASIC DRIVER UNREGISTER FAILED\n");
         return;
     }
 
-    ((struct odi_driver_functions*)driver->functions)->exit(driver, 0);
-
     if (odi_driver_unregister(BASIC_DD_MAJOR)) {
         odi_debug_append(ODI_DTAG_ERROR, "BASIC DRIVER UNREGISTER FAILED\n");
         return;
     }
 
-    odi_debug_append(ODI_DTAG_INFO, "BASIC DRIVER UNREGISTER FINISHED\n");
 }

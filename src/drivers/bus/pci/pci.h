@@ -299,5 +299,5 @@ const char* get_prog_interface(u8, u8, u8);
 void trigger_pci_interrupt();
 void subscribe_pci_interrupt(const char* id, struct pci_device_header * dev, void (*cb)(void*), void * data);
 //entries = mcfg + sizeof(mcfg), devconf_size = mcfg->header.length - sizeof(mcfg)
-void scan_pci(void *entries, u64 devconf_size,  void (*cb)(struct pci_device_header*, u32));
+void scan_pci(void *trail, u64 devconf_size,  void (*cb)(struct pci_device_header*, u32));
 #endif

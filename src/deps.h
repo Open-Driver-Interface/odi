@@ -8,6 +8,11 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+extern u8 ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE;
+extern u8 ODI_DEP_MPROTECT_PAGE_WRITE_BIT; 
+extern u8 ODI_DEP_MPROTECT_PAGE_USER_BIT;
+extern u8 ODI_DEP_MPROTECT_PAGE_NX_BIT;
+
 typedef va_list odi_va_list;
 
 //Conversion management.
@@ -15,6 +20,7 @@ char* odi_dep_itoa(s64 value, char * str, int base);
 s64 odi_dep_atoi(const char * str);
 
 int odi_dep_memcmp(const void *s1, const void *s2, size_t n);
+void* odi_dep_memset(void *s, int c, size_t n);
 
 //String management.
 int odi_dep_strcmp(const char* str1, const char* str2);
@@ -33,6 +39,8 @@ void* odi_dep_get_free_contiguous_virtual_address(size_t size);
 void odi_dep_map_current_memory_size(void* virtual_address, void* physical_memory, size_t size);
 //Maps the page aligned virtual_address to physical_memory.
 void odi_dep_map_current_memory(void* virtual_memory, void* physical_memory);
+void odi_dep_mprotect_current(void* address, u64 size, u8 permissions);
+void* odi_dep_request_current_page_identity();
 
 //Print management.
 void odi_dep_vprintf(const char* format, odi_va_list args);

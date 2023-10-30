@@ -47,20 +47,20 @@ struct odi_driver_info * odi_driver_get(u32 major) {
 }
 
 //Exported functions, abstraction layer resides here
-void * odi_driver_init(u32 major, void* iobuff) {
+void * odi_driver_init(u32 major, void* iobuff, void* control) {
     if (major >= ODI_MAX_MAJORS) return 0;
     if (odi_drivers[major].major == 0) return 0;
     struct odi_driver_functions * functions = (struct odi_driver_functions *)odi_drivers[major].functions;
     if (functions->init == 0) return 0;
-    return functions->init(&odi_drivers[major], iobuff);
+    return functions->init(&odi_drivers[major], iobuff, control);
 }
 
-void * odi_driver_exit(u32 major, void* iobuff) {
+void * odi_driver_exit(u32 major, void* iobuff, void* control) {
     if (major >= ODI_MAX_MAJORS) return 0;
     if (odi_drivers[major].major == 0) return 0;
     struct odi_driver_functions * functions = (struct odi_driver_functions *)odi_drivers[major].functions;
     if (functions->exit == 0) return 0;
-    return functions->exit(&odi_drivers[major], iobuff);
+    return functions->exit(&odi_drivers[major], iobuff, control);
 }
 
 void * odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset) {

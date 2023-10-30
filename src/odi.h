@@ -10,7 +10,7 @@
 u32 odi_autoconf(void * rsdp);
 
 //Both available in manual and automatic mode
-void * odi_manual_device_register(u32 major, void* control);
+void * odi_manual_device_register(u32 major, void* control, void* control_ex);
 u8 odi_manual_device_unregister(u32 major, u32 minor);
 
 //Operations

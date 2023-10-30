@@ -351,16 +351,16 @@ void enumerate_function(u64 device_address, u64 bus, u64 device, u64 function, v
     if (pci_device_header->device_id == 0x0) return;
     if (pci_device_header->device_id == 0xFFFF) return;
 
-    odi_debug_append(ODI_DTAG_INFO, "[PCI] %s %s: %s %s / %s\n",
-        get_device_class(pci_device_header->class_code),
-        get_subclass_name(pci_device_header->class_code, pci_device_header->subclass),
-        get_vendor_name(pci_device_header->vendor_id),
-        get_device_name(pci_device_header->vendor_id, pci_device_header->device_id),
-        get_prog_interface(pci_device_header->class_code, pci_device_header->subclass, pci_device_header->prog_if)
-    );
+    //odi_debug_append(ODI_DTAG_INFO, "[PCI] %s %s: %s %s / %s\n",
+    //    get_device_class(pci_device_header->class_code),
+    //    get_subclass_name(pci_device_header->class_code, pci_device_header->subclass),
+    //    get_vendor_name(pci_device_header->vendor_id),
+    //    get_device_name(pci_device_header->vendor_id, pci_device_header->device_id),
+    //    get_prog_interface(pci_device_header->class_code, pci_device_header->subclass, pci_device_header->prog_if)
+    //);
 
     u32 device_base_address = ((1 << 31) | (bus << 16) | (device << 11) | (function << 8));
-    odi_debug_append(ODI_DTAG_INFO, "[PCI] Device base address: %x\n", device_base_address);
+    //odi_debug_append(ODI_DTAG_INFO, "[PCI] Device base address: %x\n", device_base_address);
     cb(pci_device_header, device_base_address);
 }
 
@@ -376,7 +376,7 @@ void enumerate_device(u64 bus_address, u64 device, u64 bus, void (*cb)(struct pc
     if (pci_device_header->device_id == 0x0) return;
     if (pci_device_header->device_id == 0xFFFF) return;
 
-    odi_debug_append(ODI_DTAG_INFO, "[PCI] enumerating device %x:%x\n", bus_address, device_address);
+    //odi_debug_append(ODI_DTAG_INFO, "[PCI] enumerating device %x:%x\n", bus_address, device_address);
 
     if (pci_device_header->header_type & 0x80) {
         for (u64 function = 0; function < 8; function++) {
@@ -398,7 +398,7 @@ void enumerate_bus(u64 base_address, u64 bus,  void (*cb)(struct pci_device_head
     if (pci_device_header->device_id == 0x0) return;
     if (pci_device_header->device_id == 0xFFFF) return;
 
-    odi_debug_append(ODI_DTAG_INFO, "\n[PCI] Enumerating bus %x\n", bus);
+    //odi_debug_append(ODI_DTAG_INFO, "\n[PCI] Enumerating bus %x\n", bus);
     for (u64 device = 0; device < 32; device++) {
         enumerate_device(bus_address, device, bus, cb);
     }
@@ -519,13 +519,13 @@ void enable_bus_mastering(struct pci_device_header* pci_device_header) {
     pci_device_header->command = command;
 }
 
-void scan_pci(void *entries, u64 devconf_size,  void (*cb)(struct pci_device_header*, u32)) {
+void scan_pci(void *trail, u64 devconf_size,  void (*cb)(struct pci_device_header*, u32)) {
     u64 entryno = devconf_size / sizeof(struct device_config);
 
     for (u64 i = 0; i < entryno; i++) {
-        struct device_config * new_device_config = (struct device_config*)((u64)entries + (sizeof(struct device_config) * i));	
-        odi_debug_append(ODI_DTAG_INFO, "[PCI] Base address as registering: %x\n", new_device_config->base_address);
-        odi_debug_append(ODI_DTAG_INFO, "[PCI] Enumerating buses %x:%x\n", new_device_config->start_bus, new_device_config->end_bus);
+        struct device_config * new_device_config = (struct device_config*)((u64)trail + (sizeof(struct device_config) * i));	
+        //odi_debug_append(ODI_DTAG_INFO, "[PCI] Base address as registering: %x\n", new_device_config->base_address);
+        //odi_debug_append(ODI_DTAG_INFO, "[PCI] Enumerating buses %x:%x\n", new_device_config->start_bus, new_device_config->end_bus);
         for (u64 bus = new_device_config->start_bus; bus < new_device_config->end_bus; bus++) {
             enumerate_bus(new_device_config->base_address, bus, cb);
         }

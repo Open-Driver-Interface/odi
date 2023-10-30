@@ -16,23 +16,22 @@
 #define ODI_LICENSE_TYPE_UNCLASSIFIED   10
 #define ODI_LICENSE_TYPE_PROPIETARY     255
 
+struct odi_driver_functions {
+    void * (*init) (void * self, void* iobuff, void* control);
+    void * (*exit) (void * self, void* iobuff, void* control);
+    void * (*read) (void * self, void* iobuff, void* control, u64 read_size,  u64 read_offset);
+    void * (*write)(void * self, void* iobuff, void* control, u64 write_size, u64 write_offset);
+    void * (*ioctl)(void * self, void* iobuff, void* control, u64 operation);
+} __attribute__((packed));  
 
 struct odi_driver_info {
     u8 valid;
     u32 major;
-    void * functions; //This can be any kind of driver function, usually generic_driver_functions
+    struct odi_driver_functions * functions; //This can be any kind of driver function, usually generic_driver_functions
     u8 license;
     u8 vendor[24];
     struct odi_driver_info * next;
 };
-
-struct odi_driver_functions {
-    void * (*init) (struct odi_driver_info * self, void* iobuff);
-    void * (*exit) (struct odi_driver_info * self, void* iobuff);
-    void * (*read) (struct odi_driver_info * self, void* iobuff, void* control, u64 read_size,  u64 read_offset);
-    void * (*write)(struct odi_driver_info * self, void* iobuff, void* control, u64 write_size, u64 write_offset);
-    void * (*ioctl)(struct odi_driver_info * self, void* iobuff, void* control, u64 operation);
-} __attribute__((packed));
 
 //Registers a new device driver given a major number, a pointer to a generic_driver_functions struct (or compatible)
 //a license type and a vendor name (max 24 characters)
@@ -51,8 +50,8 @@ u8 odi_driver_unregister(u32 major);
 struct odi_driver_info * odi_driver_get(u32 major);
 
 //Exported functions, abstraction layer resides here
-void * odi_driver_init(u32 major, void* iobuff);
-void * odi_driver_exit(u32 major, void* iobuff);
+void * odi_driver_init(u32 major, void* iobuff, void* control);
+void * odi_driver_exit(u32 major, void* iobuff, void* control);
 void * odi_driver_read(u32 major, void* iobuff, void* control, u64 read_size, u64 read_offset);
 void * odi_driver_write(u32 major, void* iobuff, void* control, u64 write_size, u64 write_offset);
 void * odi_driver_ioctl(u32 major, void* iobuff, void* control, u64 operation);

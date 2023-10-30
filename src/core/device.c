@@ -120,18 +120,44 @@ struct odi_device_info * odi_device_change_major(u32 major, u32 minor, u32 new_m
 //Doesn't check that control is valid
 //Returns a pointer to the device
 //If the major doesn't exist, it creates it
-struct odi_device_info * odi_device_register(u32 major, void* control) {
+struct odi_device_info * odi_device_register(u32 major, void* control, void* control_ex) {
     if (major >= ODI_MAX_MAJORS) return 0;
     struct odi_device_info * new = odi_dep_malloc(sizeof(struct odi_device_info));
     if (new == 0) return 0;
-    new->valid = 1;
+    new->init = 0;
     new->major = major;
     new->minor = odi_find_free_minor(odi_devices[major]);
     new->control = control;
+    new->control_ex = control_ex;
     new->next = 0;
     odi_devices[major] = odi_add(odi_devices[major], new);
     return new;
 }
+
+//Gets extended control data
+//Returns a pointer to the control data
+void * odi_device_get_extended_control(u32 major) {
+    if (major >= ODI_MAX_MAJORS) return 0;
+    if (odi_devices[major] == 0) return 0;
+    return odi_devices[major]->control_ex;
+}
+
+//Signals that a device has been initialized
+//This flag is optional.
+void odi_device_inialize(u32 major) {
+    if (major >= ODI_MAX_MAJORS) return;
+    if (odi_devices[major] == 0) return;
+    odi_devices[major]->init = 1;
+}
+
+//Signals that a device has been deinitialized
+//This flag is optional.
+void odi_device_deinialize(u32 major) {
+    if (major >= ODI_MAX_MAJORS) return;
+    if (odi_devices[major] == 0) return;
+    odi_devices[major]->init = 0;
+}
+
 
 //Deletes a device
 //Returns 0 if the device was deleted

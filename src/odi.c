@@ -59,25 +59,21 @@ u8 convert_name(const char * name , struct identifier * identifier) {
 
 //Only in automatic mode
 u32 odi_autoconf(void * rsdp) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI DISCOVER DEVICES REQUEST\n");
     odi_autoconf_scan(rsdp);
     return 0;
 }
 
 //Both available in manual and automatic mode
-void * odi_manual_device_register(u32 major, void* control) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI MANUAL DEVICE REGISTER REQUEST\n");
-    return odi_device_register(major, control);
+void * odi_manual_device_register(u32 major, void* control, void* control_ex) {
+    return odi_device_register(major, control, control_ex);
 }
 
 u8 odi_manual_device_unregister(u32 major, u32 minor) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI MANUAL DEVICE UNREGISTER REQUEST\n");
     return odi_device_unregister(major, minor);
 }
 
 //Operations
 u64 odi_read(const char * device, u64 offset, u64 size, void * buffer) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI READ REQUEST\n");
     struct identifier identifier;
     if (convert_name(device, &identifier) == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DEVICE NAME INVALID\n", device);
@@ -103,7 +99,6 @@ u64 odi_read(const char * device, u64 offset, u64 size, void * buffer) {
 }
 
 u64 odi_write(const char * device, u64 offset, u64 size, void * buffer) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI WRITE REQUEST\n");
     struct identifier identifier;
     if (convert_name(device, &identifier) == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI WRITE FAILED, DEVICE NAME INVALID\n", device);
@@ -128,7 +123,6 @@ u64 odi_write(const char * device, u64 offset, u64 size, void * buffer) {
 }
 
 u64 odi_ioctl(const char * device, u64 operation, void * buffer) {
-    odi_debug_append(ODI_DTAG_INFO, "ODI IOCTL REQUEST\n");
     struct identifier identifier;
     if (convert_name(device, &identifier) == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI IOCTL FAILED, DEVICE NAME INVALID\n", device);
@@ -162,7 +156,7 @@ void odi_list_devices() {
         odi_debug_append(ODI_DTAG_INFO, "[DUMPING MAJOR %d]\n", i);
         
         while (device != 0) {
-            odi_debug_append(ODI_DTAG_INFO, "[DEVICE] MAJ: %d | MIN: %d | VALID: %d | CONTROL: %p | NEXT: %p] \n", device->major, device->minor, device->valid, device->control, device->next);
+            odi_debug_append(ODI_DTAG_INFO, "[DEVICE] MAJ: %d | MIN: %d | INIT: %d | CONTROL: %p | CONTROL_EX: %p | NEXT: %p] \n", device->major, device->minor, device->init, device->control, device->control_ex, device->next);
             device = odi_device_next(device);
         }
     }
