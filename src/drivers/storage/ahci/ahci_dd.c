@@ -42,95 +42,121 @@ void * _ahci_dd_exit (void * self, void* iobuff, void* control) {
 u64 _ahci_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
     struct ahci_port * port = (struct ahci_port*)control;
     if (port == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER READ FAILED: PORT IS NULL\n");
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATA READ FAILED: PORT IS NULL\n");
         return 0;
     }
 
     if (port->port_type != PORT_TYPE_SATA) {
-        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER READ FAILED: PORT IS NOT SATA\n");
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATA READ FAILED: PORT IS NOT SATA\n");
         return 0;
     }
     
-    u64 i = 0;
-    
-    while (i < read_size) {
-        if (read_port(port, read_offset+i, 1)) {
-            odi_dep_memcpy(((u8*)iobuff) + (512*i), ((u8*)port->buffer), 512);
-            i++;
-        } else {
-            break;
-        }
+    u64 i;
+    for (i = 0; i < read_size; i++) {
+        if (!read_port(port, read_offset+i, 1)) break;
+        odi_dep_memcpy(iobuff + (512*i), port->buffer, 512);
+    }
+    return i;
+}
+
+u64 _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
+    struct ahci_port * port = (struct ahci_port*)control;
+    if (port == 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATA WRITE FAILED: PORT IS NULL\n");
+        return 0;
+    }
+
+    if (port->port_type != PORT_TYPE_SATA) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATA WRITE FAILED: PORT IS NOT SATA\n");
+        return 0;
+    }
+
+    u64 i;
+    for (i = 0; i < write_size; i++) {
+        odi_dep_memcpy(port->buffer, iobuff + (512*i), 512);
+        if (!write_port(port, write_offset+i, 1)) break;
     }
 
     return i;
 }
 
-u64 _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER WRITE\n");
-    return 0;
-}
-
 void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) {
     
-    struct ahci_device * device = get_device_by_abar(control);
-    if (device == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER IOCTL FAILED: DEVICE NOT INITIALIZED\n");
+    struct ahci_port * port = (struct ahci_port*)control;
+    if (port == 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER IOCTL FAILED: PORT IS NULL\n");
         return 0;
     }
 
-    //struct hba_memory* abar = device->abar;
-    //struct ahci_port* port = device->ahci_ports[iobuff];
-
     switch (operation) {
         case AHCI_IOCTL_ATAPI_IDENTIFY: {
-            //if (device == 0) return 0;
-            //identify(device->abar, &(device->ahci_ports[port]));
-            //odi_dep_memcpy(iobuff, hw_buffer, 512);
+            identify(port);
+            odi_dep_memcpy(iobuff, port->buffer, 512);
             break;
         }
-        case AHCI_IOCTL_INIT: {
-            *(u32*)iobuff = 1;
+        case AHCI_IOCTL_INIT: { //TODO: Not implemented
+            *(u64*)iobuff = 1;
             return (void*)1;
         }
         case AHCI_IOCTL_CTRL_SYNC:
-            *(u32*)iobuff = 1;
+            *(u64*)iobuff = 1;
             return (void*)1; //TODO: Modify if the buffer cache is implemented or async reads
         case AHCI_IOCTL_CTRL_TRIM:
-            *(u32*)iobuff = 1;
+            *(u64*)iobuff = 1;
             return (void*)1; //TODO: Modify if the buffer cache is implemented or async reads
-        case AHCI_IOCTL_GET_SECTOR_SIZE: {
-            *(u32*)iobuff = 512;
+        case AHCI_IOCTL_GET_SECTOR_SIZE: { //TODO: Not implemented
+            *(u64*)iobuff = 512;
             return (void*)512;
         }
         case AHCI_IOCTL_GET_SECTOR_COUNT: {
-            //identify((u8)control);
-            //struct ahci_sata_ident * sident = (struct ahci_sata_ident*) hw_buffer;
-            //*(u64*)iobuff = sident->CurrentSectorCapacity;
-            //return sident->CurrentSectorCapacity;
+            identify(port);
+            struct ahci_sata_ident * sident = (struct ahci_sata_ident*) port->buffer;
+            *(u64*)iobuff = sident->CurrentSectorCapacity;
+            return (void*)sident->CurrentSectorCapacity;
         }
-        case AHCI_IOCTL_GET_BLOCK_SIZE:
-            *(u32*)iobuff = 512;
+        case AHCI_IOCTL_GET_BLOCK_SIZE: //TODO: Not implemented
+            *(u64*)iobuff = 512;
             return (void*)512;
     }
+
     return (void*)0;
 }
 
 u64 _ahci_dd_read_atapi (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER ATAPI READ\n");
-    return 0;
+    struct ahci_port * port = (struct ahci_port*)control;
+    if (port == 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATAPI READ FAILED: PORT IS NULL\n");
+        return 0;
+    }
+
+    if (port->port_type != PORT_TYPE_SATAPI) {
+        odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATAPI READ FAILED: PORT IS NOT SATAPI\n");
+        return 0;
+    }
+
+    if (read_offset != 0)
+        odi_debug_append(ODI_DTAG_WARN, "ATAPI READS ARE NOT WORKING WELL, AN OFFSET != 0 YIELDS ZEROS\n");
+
+    if (!read_atapi_port(port, read_offset, read_size))
+        return 0;
+
+    odi_dep_memcpy(iobuff, port->buffer, 512*read_size);
+
+    return read_size;
 }
+
 u64 _ahci_dd_write_atapi (void * self, void* iobuff, void* control, u64 write_size, u64 write_offset) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER ATAPI WRITE\n");
+    odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER ATAPI WRITE NOT IMPLEMENTED\n");
     return 0;
 }
 
 u64 _ahci_dd_rw_invalid (void * self, void* iobuff, void* control, u64 read_size, u64 read_offset) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER INVALID READ/WRITE ON REGISTRAR DEVICE\n");
+    odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INVALID READ/WRITE ON REGISTRAR DEVICE\n");
     return 0;
 }
 
 void * _ahci_dd_ioctl_invalid (void * self, void* iobuff, void* control, u64 operation) {
-    odi_debug_append(ODI_DTAG_INFO, "AHCI DRIVER INVALID IOCTL ON REGISTRAR DEVICE\n");
+    odi_debug_append(ODI_DTAG_ERROR, "AHCI DRIVER INVALID IOCTL ON REGISTRAR DEVICE\n");
     return 0;
 }
 

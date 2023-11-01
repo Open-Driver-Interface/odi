@@ -14,8 +14,8 @@
 
 
 //Drivers to be compiled before autoconf can be run.
-#define ODI_DRIVERS_BUS_PCI
-#define ODI_DRIVERS_MISC_ACPI
+#define ODI_AUTOCONF_DEPS_BUS_PCI
+#define ODI_AUTOCONF_DEPS_MISC_ACPI
 
 //Don't touch below this, see config.c
 struct odi_autoconf_pack {

@@ -7,7 +7,7 @@
 #include "../drivers/misc/acpi_dd.h"
 #endif
 
-#ifdef ODI_DRIVERS_BUS_PCI
+#ifdef ODI_AUTOCONF_DEPS_BUS_PCI
 #include "../drivers/bus/pci/pci_dd.h"
 #endif
 
@@ -58,7 +58,7 @@ void odi_autoconf_scan_pci(void * rsdp) {
         return;
     }
 
-#ifndef ODI_DRIVERS_BUS_PCI
+#ifndef ODI_AUTOCONF_DEPS_BUS_PCI
     odi_debug_append(ODI_DTAG_ERROR, "ODI_AUTOCONF_SCAN: PCI BUS DRIVER NOT INCLUDED\n");
     return;
 #endif
