@@ -407,7 +407,7 @@ void probe_ports(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * por
 
 void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_count) {
     odi_dep_map_current_memory(abar, abar);
-    odi_dep_mprotect_current((void*)abar, 4096, ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE | ODI_DEP_MPROTECT_PAGE_WRITE_BIT | ODI_DEP_MPROTECT_PAGE_USER_BIT | ODI_DEP_MPROTECT_PAGE_NX_BIT);
+    odi_dep_mprotect_current((void*)abar, 4096, ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE | ODI_DEP_MPROTECT_PAGE_WRITE_BIT);
 
     probe_ports(abar, ahci_ports, port_count);
 
