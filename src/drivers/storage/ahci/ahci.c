@@ -37,7 +37,7 @@ u8 identify(struct ahci_port* port) {
 
     void* buffer = port->buffer;
 
-    struct hba_command_table* command_table = (struct hba_command_table*)(u64)(command_header->command_table_base_address);
+    struct hba_command_table* command_table = (struct hba_command_table*)odi_dep_get_virtual_address((void*)(u64)(command_header->command_table_base_address));
     odi_dep_memset(command_table, 0, sizeof(struct hba_command_table) + (command_header->prdt_length - 1) * sizeof(struct hba_prdt_entry));
     command_table->prdt_entry[0].data_base_address_upper = (u32)((u64)buffer >> 32);
     command_table->prdt_entry[0].data_base_address = (u32)((u64)buffer);
@@ -103,7 +103,7 @@ u8 read_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count) {
     command_header->atapi = 1;
     command_header->prdt_length = 1;
     
-    struct hba_command_table* command_table = (struct hba_command_table*)(u64)(command_header->command_table_base_address);
+    struct hba_command_table* command_table = (struct hba_command_table*)odi_dep_get_virtual_address((void*)(u64)(command_header->command_table_base_address));
     odi_dep_memset(command_table, 0, sizeof(struct hba_command_table) + (command_header->prdt_length - 1) * sizeof(struct hba_prdt_entry));
 
     command_table->prdt_entry[0].data_base_address = (u32)(u64)buffer;
@@ -179,7 +179,7 @@ u8 read_port(struct ahci_port* port, u64 sector, u32 sector_count) {
     command_header->write = 0;
     command_header->prdt_length = (u16)((sector_count - 1) >> 4) + 1;
 
-    struct hba_command_table* command_table = (struct hba_command_table*)(u64)(command_header->command_table_base_address);
+    struct hba_command_table* command_table = (struct hba_command_table*)odi_dep_get_virtual_address((void*)(u64)(command_header->command_table_base_address));
     odi_dep_memset(command_table, 0, sizeof(struct hba_command_table) + (command_header->prdt_length - 1) * sizeof(struct hba_prdt_entry));
     void* buffer = port->buffer;
     int i;
@@ -259,7 +259,7 @@ u8 write_port(struct ahci_port* port, u64 sector, u32 sector_count) {
     command_header->write = 1;
     command_header->prdt_length = (u16)((sector_count - 1) >> 4) + 1;
 
-    struct hba_command_table* command_table = (struct hba_command_table*)(u64)(command_header->command_table_base_address);
+    struct hba_command_table* command_table = (struct hba_command_table*)odi_dep_get_virtual_address((void*)(u64)(command_header->command_table_base_address));
     odi_dep_memset(command_table, 0, sizeof(struct hba_command_table) + (command_header->prdt_length - 1) * sizeof(struct hba_prdt_entry));
     void* buffer = port->buffer;
     int i;
