@@ -31,8 +31,8 @@ To get started with OpenDriverInterface, follow these steps:
 3. If you want to port ODI to your OS :
     1. Get one c file to build ODI:
         
-        ```sh
-        ofc.sh
+        ```bash
+        sh ofc.sh
         ```
 
     2. Port functions listed in `deps.h`
