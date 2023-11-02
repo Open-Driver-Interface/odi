@@ -1,6 +1,6 @@
 # OpenDriverInterface
 
-![OpenDriverInterface Logo](https://github.com/TretornESP/OpenDriverInterface/raw/main/logo.png)
+![OpenDriverInterface Logo](https://avatars.githubusercontent.com/u/148554888?v=4)
 
 OpenDriverInterface is a comprehensive framework designed for OS development hobbyists and professional kernel developers. It offers a seamless solution for integrating device drivers into your operating system through a well-documented interface and a cohesive abstraction layer. This framework is designed to be standalone, requiring minimal modifications for integration with your existing OS projects. It is versatile, catering to both those who wish to write their own device drivers and those looking to integrate a basic subset of device drivers into their OS.
 
@@ -22,7 +22,7 @@ OpenDriverInterface is a comprehensive framework designed for OS development hob
 
 To get started with OpenDriverInterface, follow these simple steps:
 
-1. Clone the OpenDriverInterface repository from [GitHub](https://github.com/TretornESP/OpenDriverInterface).
+1. Clone the OpenDriverInterface repository from [GitHub](https://github.com/Open-Driver-Interface/odi).
 
 2. Check out the extensive documentation in the `docs` directory. It provides insights into the framework's architecture and usage.
 
@@ -34,11 +34,11 @@ To get started with OpenDriverInterface, follow these simple steps:
 
 ## Contribution
 
-We welcome contributions from the open-source community to enhance and expand OpenDriverInterface. If you want to contribute or report issues, please refer to our [Contribution Guidelines](https://github.com/TretornESP/OpenDriverInterface/blob/main/CONTRIBUTING.md) and [Code of Conduct](https://github.com/TretornESP/OpenDriverInterface/blob/main/CODE_OF_CONDUCT.md).
+We welcome contributions from the open-source community to enhance and expand OpenDriverInterface. If you want to contribute or report issues, please refer to our [Contribution Guidelines](https://github.com/Open-Driver-Interface/odi/blob/main/CONTRIBUTING.md) and [Code of Conduct](https://github.com/Open-Driver-Interface/odi/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-OpenDriverInterface is released under the MIT License. For more details, refer to the [LICENSE](https://github.com/TretornESP/OpenDriverInterface/blob/main/LICENSE) file.
+OpenDriverInterface is released under the MIT License. For more details, refer to the [LICENSE](https://github.com/Open-Driver-Interface/odi/blob/main/LICENSE) file.
 
 ## Contact
 
@@ -50,7 +50,7 @@ We hope that OpenDriverInterface simplifies your journey into OS development by 
 
 We would like to thank the following people for their contributions to OpenDriverInterface:
 
-- Keep-Konect [github](https://github.com/Keep-Konect)
+- Keep-Konect [github](https://github.com/konect-V)
 - Marco Paland [email](mailto://info@paland.com)
 - Absurd Poncho [github](https://github.com/Absurdponcho)
 - The Limine project [github](https://github.com/limine-bootloader)
