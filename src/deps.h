@@ -7,7 +7,6 @@
 
 extern u8 ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE;
 extern u8 ODI_DEP_MPROTECT_PAGE_WRITE_BIT; 
-extern u8 ODI_DEP_MPROTECT_PAGE_NX_BIT;
 
 //Conversion management.
 char* odi_dep_itoa(s64 value, char * str, int base);
