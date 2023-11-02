@@ -50,7 +50,7 @@ We hope that OpenDriverInterface simplifies your journey into OS development by 
 
 We would like to thank the following people for their contributions to OpenDriverInterface:
 
-- Keep-Konect [github](https://github.com/konect-V)
+- Konect-V [github](https://github.com/konect-V)
 - Marco Paland [email](mailto://info@paland.com)
 - Absurd Poncho [github](https://github.com/Absurdponcho)
 - The Limine project [github](https://github.com/limine-bootloader)
