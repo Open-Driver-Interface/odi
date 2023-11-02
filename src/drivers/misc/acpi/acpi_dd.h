@@ -1,8 +1,8 @@
 #ifndef _ACPI_DD_H
 #define _ACPI_DD_H
 
-#include "../../core/types.h"
-#include "../../core/driver.h"
+#include "../../../core/types.h"
+#include "../../../core/driver.h"
 
 #define ACPI_DD_IOCTL_INIT 0
 #define ACPI_DD_IOCTL_GET_MCFG 1

@@ -1,7 +1,7 @@
 #ifndef _ACPI_H
 #define _ACPI_H
 
-#include "../../core/types.h"
+#include "../../../core/types.h"
 
 #define RSDP_SIGNATURE "RSD PTR "
 #define RSDP2_SIGNATURE "RSDP PTR "

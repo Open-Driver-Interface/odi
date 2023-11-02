@@ -19,10 +19,10 @@ char * read_device(u32 ignored, u32 ignored2, u32 ignored3) {
 void write_device(u32 ignored, u32 ignored2, u32 ignored3, char * ignored4) {
 }
 
-char * do_cool_things() {
+char * do_cool_things(void) {
     return "cool\n";
 }
 
-char * do_dumb_things() {
+char * do_dumb_things(void) {
     return "hi mom\n";
 }

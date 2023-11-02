@@ -3,7 +3,7 @@
 #include "acpi.h"
 
 //This includes are not important!
-#include "../../core/debug.h"
+#include "../../../core/debug.h"
 
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 

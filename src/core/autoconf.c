@@ -11,7 +11,7 @@
 #include "../drivers/bus/pci/pci_dd.h"
 #endif
 
-void odi_autoconf_autoinit() {
+void odi_autoconf_autoinit(void) {
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         if (i == ODI_AUTOCONF_UNSUPPORTED_MAJOR) continue;
         struct odi_driver_info * driver = odi_driver_get(i);
@@ -79,7 +79,7 @@ void odi_autoconf_scan_pci(void * rsdp) {
 
 }
 
-void odi_autoconf_scan_drivers() {
+void odi_autoconf_scan_drivers(void) {
     for (u32 i = 0; i < ODI_DRIVER_AUTOCONF_COUNT; i++) {
         struct odi_autoconf_pack * pack = &ODI_DRIVER_AUTOCONF_PACKS[i];
         if (pack->init != 0) {

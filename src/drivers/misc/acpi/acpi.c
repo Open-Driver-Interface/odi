@@ -1,5 +1,5 @@
 #include "acpi.h"
-#include "../../deps.h"
+#include "../../../deps.h"
 
 u8 acpi_sdt_checksum(struct acpi_sdt_header* table_header)
 {
