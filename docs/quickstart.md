@@ -16,26 +16,26 @@ To get started with OpenDriverInterface, follow these steps:
     ```
 
 2. If you don't have your own OS :
-    21. Setup the environment using `make`:
+    1. Setup the environment using `make`:
 
         ```bash
         make setup
         ```
 
-    22. Run the software:
+    2. Run the software:
 
         ```bash
         make
         ```
 
 3. If you want to port ODI to your OS :
-    31. Get one c file to build ODI:
+    1. Get one c file to build ODI:
         
         ```sh
         ofc.sh
         ```
-        
-    32. Port functions listed in `deps.h`
+
+    2. Port functions listed in `deps.h`
 
 ## Implementing the Library
 
