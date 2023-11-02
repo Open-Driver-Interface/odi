@@ -27,7 +27,7 @@ u8 identify(struct ahci_port* port) {
         return 0;
     }
 
-    struct hba_command_header * command_header = (struct hba_command_header*)(u64)(port->hba_port->command_list_base);
+    struct hba_command_header * command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)(u64)(port->hba_port->command_list_base));
     command_header += slot;
     command_header->command_fis_length = 5;
     command_header->write = 0;
@@ -95,7 +95,7 @@ u8 read_atapi_port(struct ahci_port* port, u64 sector, u32 sector_count) {
         return 0;
     }
 
-    struct hba_command_header* command_header = (struct hba_command_header*)(u64)(port->hba_port->command_list_base);
+    struct hba_command_header* command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)(u64)(port->hba_port->command_list_base));
     command_header += slot;
 
     command_header->command_fis_length = sizeof(struct hba_command_fis) / sizeof(u32);
@@ -173,7 +173,7 @@ u8 read_port(struct ahci_port* port, u64 sector, u32 sector_count) {
         return 0;
     }
 
-    struct hba_command_header* command_header = (struct hba_command_header*)(u64)(port->hba_port->command_list_base);
+    struct hba_command_header* command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)(u64)(port->hba_port->command_list_base));
     command_header += slot;
     command_header->command_fis_length = sizeof(struct hba_command_fis) / sizeof(u32);
     command_header->write = 0;
@@ -253,7 +253,7 @@ u8 write_port(struct ahci_port* port, u64 sector, u32 sector_count) {
         return 0;
     }
 
-    struct hba_command_header* command_header = (struct hba_command_header*)(u64)(port->hba_port->command_list_base);
+    struct hba_command_header* command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)(u64)(port->hba_port->command_list_base));
     command_header += slot;
     command_header->command_fis_length = sizeof(struct hba_command_fis) / sizeof(u32);
     command_header->write = 1;
@@ -340,26 +340,26 @@ void port_start_command(struct ahci_port* port) {
 void configure_port(struct ahci_port* port) {
     port_stop_command(port);
 
-    void * new_base = odi_dep_request_current_page_identity();
+    void * new_base = odi_dep_request_current_page();
     port->hba_port->command_list_base = (u32)(u64)new_base;
     port->hba_port->command_list_base_upper = (u32)((u64)new_base >> 32);
-    odi_dep_memset(new_base, 0, 1024);
+    odi_dep_memset(odi_dep_get_virtual_address(new_base), 0, 1024);
 
-    void * new_fis_base = odi_dep_request_current_page_identity();
+    void * new_fis_base = odi_dep_request_current_page();
     port->hba_port->fis_base_address = (u32)(u64)new_fis_base;
     port->hba_port->fis_base_address_upper = (u32)((u64)new_fis_base >> 32);
-    odi_dep_memset(new_fis_base, 0, 256);
+    odi_dep_memset(odi_dep_get_virtual_address(new_fis_base), 0, 256);
 
-    struct hba_command_header* command_header = (struct hba_command_header*)((u64)port->hba_port->command_list_base + ((u64) port->hba_port->command_list_base_upper << 32));
+    struct hba_command_header* command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)((u64)port->hba_port->command_list_base + ((u64) port->hba_port->command_list_base_upper << 32)));
 
     for (int i = 0; i < 32; i++) {
         command_header[i].prdt_length = 8;
 
-        void * cmd_table_address = odi_dep_request_current_page_identity();
+        void * cmd_table_address = odi_dep_request_current_page();
         u64 address = (u64)cmd_table_address + (i << 8);
         command_header[i].command_table_base_address = (u32)(u64)address;
         command_header[i].command_table_base_address_upper = (u32)((u64)address >> 32);
-        odi_dep_memset(cmd_table_address, 0, 256);
+        odi_dep_memset(odi_dep_get_virtual_address(cmd_table_address), 0, 256);
     }
 
     port_start_command(port);
@@ -414,8 +414,8 @@ void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_
     for (int i = 0; i < *port_count; i++) {
         struct ahci_port* port = &ahci_ports[i];
         configure_port(port);
-        port->buffer = (u8*)odi_dep_request_current_page_identity();
-        odi_dep_memset(port->buffer, 0, 4096);
+        port->buffer = (u8*)odi_dep_request_current_page();
+        odi_dep_memset(odi_dep_get_virtual_address(port->buffer), 0, 4096);
     }
 
 }

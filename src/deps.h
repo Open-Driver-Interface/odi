@@ -36,7 +36,8 @@ void odi_dep_map_current_memory_size(void* virtual_address, void* physical_memor
 //Maps the page aligned virtual_address to physical_memory.
 void odi_dep_map_current_memory(void* virtual_memory, void* physical_memory);
 void odi_dep_mprotect_current(void* address, u64 size, u8 permissions);
-void* odi_dep_request_current_page_identity(void);
+void* odi_dep_request_current_page(void);
+void* odi_dep_get_virtual_address(void* address);
 
 //Print management.
 void odi_dep_vprintf(const char* format, odi_va_list args);
