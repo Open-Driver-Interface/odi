@@ -5,6 +5,7 @@
 
 #include "core/types.h"
 
+extern u64 ODI_DEP_PAGE_SIZE;
 extern u8 ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE;
 extern u8 ODI_DEP_MPROTECT_PAGE_WRITE_BIT; 
 

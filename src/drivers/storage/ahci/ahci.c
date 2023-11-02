@@ -407,7 +407,7 @@ void probe_ports(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * por
 
 void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_count) {
     odi_dep_map_current_memory(abar, abar);
-    odi_dep_mprotect_current((void*)abar, 4096, ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE | ODI_DEP_MPROTECT_PAGE_WRITE_BIT);
+    odi_dep_mprotect_current((void*)abar, ODI_DEP_PAGE_SIZE, ODI_DEP_MPROTECT_PAGE_CACHE_DISABLE | ODI_DEP_MPROTECT_PAGE_WRITE_BIT);
 
     probe_ports(abar, ahci_ports, port_count);
 
@@ -415,7 +415,7 @@ void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_
         struct ahci_port* port = &ahci_ports[i];
         configure_port(port);
         port->buffer = (u8*)odi_dep_request_current_page();
-        odi_dep_memset(odi_dep_get_virtual_address(port->buffer), 0, 4096);
+        odi_dep_memset(odi_dep_get_virtual_address(port->buffer), 0, ODI_DEP_PAGE_SIZE);
     }
 
 }
