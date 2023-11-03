@@ -69,3 +69,9 @@ void odi_debug_clear(const char * tag) {
     (void)tag;
     //TODO: CHANGE THIS
 }
+
+void odi_assert_(int expr, char* file, int line){
+    if(!expr){
+        odi_debug_append("assert", "failed at %s:%d", file, line);
+    }
+}

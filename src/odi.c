@@ -56,79 +56,60 @@ u8 odi_manual_device_unregister(u32 major, u32 minor) {
 }
 
 //Operations
-u64 odi_read(const char * device, u64 offset, u64 size, void * buffer) {
+odi_device_t odi_open(const char* device_name){
     struct identifier identifier;
-    if (convert_name(device, &identifier) == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DEVICE NAME INVALID\n", device);
-        return 0;
+    if (convert_name(device_name, &identifier) == 0) {
+        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DEVICE NAME INVALID\n", device_name);
+        return NULL;
     }
 
-    struct odi_device_info * device_info = odi_device_get(identifier.major, identifier.minor);
+    struct odi_device_info* device_info = odi_device_get(identifier.major, identifier.minor);
     if (device_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DEVICE NOT FOUND\n", device);
-        return 0;
+        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DEVICE NOT FOUND\n", device_name);
+        return NULL;
     }
 
-    struct odi_driver_info * driver_info = odi_driver_get(identifier.major);
-    if (driver_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI READ FAILED, DRVIER NOT FOUND\n", device);
-        return 0;
-    }
+    return (odi_device_t)device_info;
+}
+
+u64 odi_read(odi_device_t device, u64 offset, u64 size, void * buffer) {
+    odi_assert(device != NULL);
+
+    struct odi_device_info* device_info = (struct odi_device_info*)device;
 
     return odi_driver_read(device_info->major, buffer, device_info->control, size, offset);
 }
 
-u64 odi_write(const char * device, u64 offset, u64 size, void * buffer) {
-    struct identifier identifier;
-    if (convert_name(device, &identifier) == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI WRITE FAILED, DEVICE NAME INVALID\n", device);
-        return 0;
-    }
+u64 odi_write(odi_device_t device, u64 offset, u64 size, void * buffer) {
+    odi_assert(device != NULL);
 
-    struct odi_device_info * device_info = odi_device_get(identifier.major, identifier.minor);
-    if (device_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI WRITE FAILED, DEVICE NOT FOUND\n", device);
-        return 0;
-    }
-
-    struct odi_driver_info * driver_info = odi_driver_get(identifier.major);
-    if (driver_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI WRITE FAILED, DRVIER NOT FOUND\n", device);
-        return 0;
-    }
+    struct odi_device_info* device_info = (struct odi_device_info*)device;
 
     //TODO: Make this return the number of bytes written
     odi_driver_write(device_info->major, buffer, device_info->control, size, offset);
+
     return 1;
 }
 
-u64 odi_ioctl(const char * device, u64 operation, void * buffer) {
-    struct identifier identifier;
-    if (convert_name(device, &identifier) == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI IOCTL FAILED, DEVICE NAME INVALID\n", device);
-        return 0;
-    }
+u64 odi_ioctl(odi_device_t device, u64 operation, void * buffer) {
+    odi_assert(device != NULL);
 
-    struct odi_device_info * device_info = odi_device_get(identifier.major, identifier.minor);
-    if (device_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI IOCTL FAILED, DEVICE NOT FOUND\n", device);
-        return 0;
-    }
+    struct odi_device_info* device_info = (struct odi_device_info*)device;
 
-    struct odi_driver_info * driver_info = odi_driver_get(identifier.major);
-    if (driver_info == 0) {
-        odi_debug_append(ODI_DTAG_ERROR, "[%s] ODI IOCTL FAILED, DRVIER NOT FOUND\n", device);
-        return 0;
-    }
-
-    //TODO: Make this return the number of bytes written
+    //TODO: Make this return correctly
     odi_driver_ioctl(device_info->major, buffer, device_info->control, operation);
 
     return 1;
 }
 
+u64 odi_close(odi_device_t device){
+    // TODO
+
+    return 1;
+}
+
 //Debug
-void odi_list_devices() {
+void odi_list_devices(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI LIST DEVICES REQUEST\n");
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         struct odi_device_info * device = odi_device_getall(i);
@@ -152,15 +133,5 @@ void odi_list_drivers(void) {
         if (driver == 0) continue;
         odi_debug_append(ODI_DTAG_INFO, "[DRIVER] MAJ: %d | VALID: %d |  FUNCTIONS: %p | LICENSE: %d | VENDOR: %s | NEXT: %p] \n", driver->major, driver->valid, driver->functions, driver->license, driver->vendor, driver->next);
     }
-    odi_debug_flush(ODI_DTAG_INFO);
-}
-
-void odi_hello(void) {
-    odi_debug_append(ODI_DTAG_INFO, "Hello from ODI!\n");
-    odi_debug_flush(ODI_DTAG_INFO);
-}
-
-void odi_goodbye(void) {
-    odi_debug_append(ODI_DTAG_INFO, "Goodbye from ODI!\n");
     odi_debug_flush(ODI_DTAG_INFO);
 }

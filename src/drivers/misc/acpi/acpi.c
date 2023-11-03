@@ -1,7 +1,7 @@
 #include "acpi.h"
 #include "../../../deps.h"
 
-u8 acpi_sdt_checksum(struct acpi_sdt_header* table_header)
+u8 acpi_sdt_checksum(struct odi_acpi_sdt_header* table_header)
 {
     u8 sum = 0;
  
@@ -13,12 +13,12 @@ u8 acpi_sdt_checksum(struct acpi_sdt_header* table_header)
     return (sum == 0);
 }
 
-struct acpi_sdt_header* find_rsdt(struct rsdt* rsdt, const char* signature, u64 sig_len) {
-    u32 entries = (rsdt->header.length - sizeof(struct acpi_sdt_header)) / sizeof(u32);
+struct odi_acpi_sdt_header* find_rsdt(struct odi_rsdt* rsdt, const char* signature, u64 sig_len) {
+    u32 entries = (rsdt->header.length - sizeof(struct odi_acpi_sdt_header)) / sizeof(u32);
 
     for (u32 i = 0; i < entries; i++) {
         u32 pto = rsdt->pointer_other_sdt[i];
-        struct acpi_sdt_header* header = (struct acpi_sdt_header*)(u64)pto; //TODO: delete this inmediately
+        struct odi_acpi_sdt_header* header = (struct odi_acpi_sdt_header*)(u64)pto; //TODO: delete this inmediately
 
         if (!odi_dep_memcmp(header->signature, signature, sig_len))
             return header;
@@ -27,12 +27,12 @@ struct acpi_sdt_header* find_rsdt(struct rsdt* rsdt, const char* signature, u64 
     return 0;
 }
 
-struct acpi_sdt_header* find_xsdt(struct xsdt* xsdt, const char* signature, u64 sig_len) {
-    u32 entries = (xsdt->header.length - sizeof(struct acpi_sdt_header)) / sizeof(u64);
+struct odi_acpi_sdt_header* find_xsdt(struct odi_xsdt* xsdt, const char* signature, u64 sig_len) {
+    u32 entries = (xsdt->header.length - sizeof(struct odi_acpi_sdt_header)) / sizeof(u64);
 
     for (u32 i = 0; i < entries; i++) {
         u32 pto = xsdt->pointer_other_sdt[i];
-        struct acpi_sdt_header* header = (struct acpi_sdt_header*)(u64)pto; //TODO: delete this inmediately
+        struct odi_acpi_sdt_header* header = (struct odi_acpi_sdt_header*)(u64)pto; //TODO: delete this inmediately
 
         if (!odi_dep_memcmp(header->signature, signature, sig_len))
             return header;
@@ -47,7 +47,7 @@ void* init_acpi_vt(void* rsdp_address, const char* target) {
 
     //printf("RSDP revision 2\n");
 
-    struct rsdp2_descriptor* rsdp = (struct rsdp2_descriptor*)rsdp_address;
+    struct odi_rsdp2_descriptor* rsdp = (struct odi_rsdp2_descriptor*)rsdp_address;
 
     if (odi_dep_memcmp(rsdp->first_part.signature, "RSD PTR ", 8))
         return 0;
@@ -61,8 +61,8 @@ void* init_acpi_vt(void* rsdp_address, const char* target) {
         rsdp->xsdt_address, rsdp->extended_checksum, rsdp->reserved
     );
     */
-    struct xsdt* xsdt = (struct xsdt*)(u64)(rsdp->xsdt_address);
-    struct acpi_sdt_header* result = find_xsdt(xsdt, target, 4);
+    struct odi_xsdt* xsdt = (struct odi_xsdt*)(u64)(rsdp->xsdt_address);
+    struct odi_acpi_sdt_header* result = find_xsdt(xsdt, target, 4);
 
     if (!acpi_sdt_checksum(result))
         return 0;
@@ -76,7 +76,7 @@ void* init_acpi_vz(void* rsdp_address, const char * target) {
 
     //printf("RSDP revision 0\n");
 
-    struct rsdp_descriptor* rsdp = (struct rsdp_descriptor*)rsdp_address;
+    struct odi_rsdp_descriptor* rsdp = (struct odi_rsdp_descriptor*)rsdp_address;
 
     if (odi_dep_memcmp(rsdp->signature, "RSD PTR ", 8))
         return 0;
@@ -90,8 +90,8 @@ void* init_acpi_vz(void* rsdp_address, const char * target) {
     );
     */
 
-    struct rsdt* rsdt = (struct rsdt*)(u64)(rsdp->rsdt_address);
-    struct acpi_sdt_header* result = find_rsdt(rsdt, target, 4);
+    struct odi_rsdt* rsdt = (struct odi_rsdt*)(u64)(rsdp->rsdt_address);
+    struct odi_acpi_sdt_header* result = find_rsdt(rsdt, target, 4);
 
     if (!acpi_sdt_checksum(result))
         return 0;
@@ -99,20 +99,20 @@ void* init_acpi_vz(void* rsdp_address, const char * target) {
     return (void*)result;
 }
 
-struct mcfg_header* get_acpi_mcfg(void * rsdp_address) {
+struct odi_mcfg_header* get_acpi_mcfg(void * rsdp_address) {
     char signature[9];
     char oemid[7];
     char oemtableid[9];
 
     if (rsdp_address == 0) return 0;
 
-    struct rsdp_descriptor* prev_rsdp = (struct rsdp_descriptor*)rsdp_address;
-    struct mcfg_header* mcfg_header = 0x0;
+    struct odi_rsdp_descriptor* prev_rsdp = (struct odi_rsdp_descriptor*)rsdp_address;
+    struct odi_mcfg_header* mcfg_header = 0x0;
 
     if (prev_rsdp->revision == 0) {
-        mcfg_header = (struct mcfg_header*)init_acpi_vz(rsdp_address, "MCFG");
+        mcfg_header = (struct odi_mcfg_header*)init_acpi_vz(rsdp_address, "MCFG");
     } else if (prev_rsdp->revision == 2) {
-        mcfg_header = (struct mcfg_header*)init_acpi_vt(rsdp_address, "MCFG");
+        mcfg_header = (struct odi_mcfg_header*)init_acpi_vt(rsdp_address, "MCFG");
     } else {
         return 0;
     }
@@ -125,20 +125,20 @@ struct mcfg_header* get_acpi_mcfg(void * rsdp_address) {
     return mcfg_header;
 }
 
-struct madt_header* get_acpi_madt(void * rsdp_address) {
+struct odi_madt_header* get_acpi_madt(void * rsdp_address) {
     char signature[9];
     char oemid[7];
     char oemtableid[9];
 
     if (rsdp_address == 0) return 0;
 
-    struct rsdp_descriptor* prev_rsdp = (struct rsdp_descriptor*)rsdp_address;
-    struct madt_header* madt_header = 0x0;
+    struct odi_rsdp_descriptor* prev_rsdp = (struct odi_rsdp_descriptor*)rsdp_address;
+    struct odi_madt_header* madt_header = 0x0;
 
     if (prev_rsdp->revision == 0) {
-        madt_header = (struct madt_header*)init_acpi_vz(rsdp_address, "APIC");
+        madt_header = (struct odi_madt_header*)init_acpi_vz(rsdp_address, "APIC");
     } else if (prev_rsdp->revision == 2) {
-        madt_header = (struct madt_header*)init_acpi_vt(rsdp_address, "APIC");
+        madt_header = (struct odi_madt_header*)init_acpi_vt(rsdp_address, "APIC");
     } else {
         return 0;
     }   
@@ -152,20 +152,20 @@ struct madt_header* get_acpi_madt(void * rsdp_address) {
     return madt_header;
 }
 
-struct fadt_header* get_acpi_fadt(void * rsdp_address) {
+struct odi_fadt_header* get_acpi_fadt(void * rsdp_address) {
     char signature[9];
     char oemid[7];
     char oemtableid[9];
 
     if (rsdp_address == 0) return 0;
 
-    struct rsdp_descriptor* prev_rsdp = (struct rsdp_descriptor*)rsdp_address;
-    struct fadt_header* fadt_header = 0x0;
+    struct odi_rsdp_descriptor* prev_rsdp = (struct odi_rsdp_descriptor*)rsdp_address;
+    struct odi_fadt_header* fadt_header = 0x0;
 
     if (prev_rsdp->revision == 0) {
-        fadt_header = (struct fadt_header*)init_acpi_vz(rsdp_address, "FACP");
+        fadt_header = (struct odi_fadt_header*)init_acpi_vz(rsdp_address, "FACP");
     } else if (prev_rsdp->revision == 2) {
-        fadt_header = (struct fadt_header*)init_acpi_vt(rsdp_address, "FACP");
+        fadt_header = (struct odi_fadt_header*)init_acpi_vt(rsdp_address, "FACP");
     } else {
         return 0;
     }   
@@ -179,7 +179,7 @@ struct fadt_header* get_acpi_fadt(void * rsdp_address) {
     return fadt_header;
 }
 
-u8 is_enabled(struct fadt_header* fadt_header) {
+u8 is_enabled(struct odi_fadt_header* fadt_header) {
     //Check if ACPI is enabled
     if (fadt_header->smi_command_port != 0) return 0;
     if (fadt_header->acpi_enable != 0 || fadt_header->acpi_disable != 0) return 0;
@@ -192,7 +192,7 @@ void startup(void * rsdp_address) {
 
     if (rsdp_address == 0) return;
 
-    struct fadt_header* fadt_header = get_acpi_fadt(rsdp_address);
+    struct odi_fadt_header* fadt_header = get_acpi_fadt(rsdp_address);
     if (fadt_header == 0) return;
     if (is_enabled(fadt_header)) return;
     if (odi_dep_inw(fadt_header->pm1a_control_block) & 1) return;

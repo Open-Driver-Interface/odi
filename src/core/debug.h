@@ -28,4 +28,8 @@ void odi_debug_cleara(void);
 void odi_debug_flush(const char * tag);
 void odi_debug_clear(const char * tag);
 
+
+void odi_assert_(int expr, char* file, int line);
+#define odi_assert(expr) odi_assert_(expr, __FILE__, __LINE__)
+
 #endif

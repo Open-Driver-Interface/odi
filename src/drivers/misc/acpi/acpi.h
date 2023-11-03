@@ -39,7 +39,7 @@
 #define PM_PROFILE_APPLIANCE_PC                         6
 #define PM_PROFILE_PERFORMANCE_SERVER                   7
 
-struct rsdp_descriptor {
+struct odi_rsdp_descriptor {
     char signature[8];
     u8 checksum;
     char oem_id[6];
@@ -47,8 +47,8 @@ struct rsdp_descriptor {
     u32 rsdt_address;
 } __attribute__ ((packed));
 
-struct rsdp2_descriptor {
-    struct rsdp_descriptor first_part;
+struct odi_rsdp2_descriptor {
+    struct odi_rsdp_descriptor first_part;
 
     u32 length;
     u64 xsdt_address;
@@ -56,7 +56,7 @@ struct rsdp2_descriptor {
     u8 reserved[3];
 } __attribute__ ((packed));
 
-struct acpi_sdt_header {
+struct odi_acpi_sdt_header {
     char signature[4];
     u32 length;
     u8 revision;
@@ -68,28 +68,28 @@ struct acpi_sdt_header {
     u32 creator_revision;
 } __attribute__ ((packed));
 
-struct rsdt {
-    struct acpi_sdt_header header;
+struct odi_rsdt {
+    struct odi_acpi_sdt_header header;
     u32 pointer_other_sdt[];
 } __attribute__ ((packed)); 
 
-struct xsdt {
-  struct acpi_sdt_header header;
+struct odi_xsdt {
+  struct odi_acpi_sdt_header header;
   u64 pointer_other_sdt[];
 } __attribute__ ((packed));
 
-struct mcfg_header {
-    struct acpi_sdt_header header;
+struct odi_mcfg_header {
+    struct odi_acpi_sdt_header header;
     u64 reserved;
 } __attribute__ ((packed));
 
-struct madt_header {
-    struct acpi_sdt_header header;
+struct odi_madt_header {
+    struct odi_acpi_sdt_header header;
     u32 local_apic_address;
     u32 flags; //1 for dual 8259 PIC, 0 for single
 } __attribute__ ((packed));
 
-struct generic_address_structure {
+struct odi_generic_address_structure {
     u8 address_space;
     u8 bit_width;
     u8 bit_offset;
@@ -97,8 +97,8 @@ struct generic_address_structure {
     u64 address;
 } __attribute__ ((packed));
 
-struct fadt_header {
-    struct acpi_sdt_header header;
+struct odi_fadt_header {
+    struct odi_acpi_sdt_header header;
     u32 firmware_control;
     u32 dsdt;
 
@@ -145,7 +145,7 @@ struct fadt_header {
     u32 flags;
 
     // 12 byte structure; see below for details
-    struct generic_address_structure reset_reg;
+    struct odi_generic_address_structure reset_reg;
 
     u8 reset_value;
     u8 reserved3[3];
@@ -154,19 +154,19 @@ struct fadt_header {
     u64 x_firmware_control;
     u64 x_dsdt;
 
-    struct generic_address_structure x_pm1a_event_block;
-    struct generic_address_structure x_pm1b_event_block;
-    struct generic_address_structure x_pm1a_control_block;
-    struct generic_address_structure x_pm1b_control_block;
-    struct generic_address_structure x_pm2_control_block;
-    struct generic_address_structure x_pm_timer_block;
-    struct generic_address_structure x_gpe0_block;
-    struct generic_address_structure x_gpe1_block;
+    struct odi_generic_address_structure x_pm1a_event_block;
+    struct odi_generic_address_structure x_pm1b_event_block;
+    struct odi_generic_address_structure x_pm1a_control_block;
+    struct odi_generic_address_structure x_pm1b_control_block;
+    struct odi_generic_address_structure x_pm2_control_block;
+    struct odi_generic_address_structure x_pm_timer_block;
+    struct odi_generic_address_structure x_gpe0_block;
+    struct odi_generic_address_structure x_gpe1_block;
 } __attribute__ ((packed));
 
-struct mcfg_header* get_acpi_mcfg(void * rsdp_address);
-struct madt_header* get_acpi_madt(void * rsdp_address);
-struct fadt_header* get_acpi_fadt(void * rsdp_address);
+struct odi_mcfg_header* get_acpi_mcfg(void * rsdp_address);
+struct odi_madt_header* get_acpi_madt(void * rsdp_address);
+struct odi_fadt_header* get_acpi_fadt(void * rsdp_address);
 
 void startup(void * rsdp_address);
 #endif

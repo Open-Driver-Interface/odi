@@ -9,7 +9,7 @@
 #define ACPI_DD_IOCTL_GET_FADT 2
 #define ACPI_DD_IOCTL_GET_MADT 3
 
-struct acpi_dd_mcfg_header {
+struct odi_acpi_dd_mcfg_header {
     char signature[4];
     u32 length;
     u8 revision;
@@ -22,7 +22,7 @@ struct acpi_dd_mcfg_header {
     u64 reserved;
 } __attribute__((packed));
 
-struct acpi_dd_madt_header {
+struct odi_acpi_dd_madt_header {
     char signature[4];
     u32 length;
     u8 revision;
@@ -36,7 +36,7 @@ struct acpi_dd_madt_header {
     u32 flags; //1 for dual 8259 PIC, 0 for single
 } __attribute__((packed));
 
-struct acpi_dd_generic_address_structure {
+struct odi_acpi_dd_generic_address_structure {
     u8 address_space;
     u8 bit_width;
     u8 bit_offset;
@@ -44,7 +44,7 @@ struct acpi_dd_generic_address_structure {
     u64 address;
 } __attribute__ ((packed));
 
-struct acpi_dd_fadt_header {
+struct odi_acpi_dd_fadt_header {
     char signature[4];
     u32 length;
     u8 revision;
@@ -100,7 +100,7 @@ struct acpi_dd_fadt_header {
     u32 flags;
 
     // 12 byte structure; see below for details
-    struct acpi_dd_generic_address_structure reset_reg;
+    struct odi_acpi_dd_generic_address_structure reset_reg;
 
     u8 reset_value;
     u8 reserved3[3];
@@ -109,14 +109,14 @@ struct acpi_dd_fadt_header {
     u64 x_firmware_control;
     u64 x_dsdt;
 
-    struct acpi_dd_generic_address_structure x_pm1a_event_block;
-    struct acpi_dd_generic_address_structure x_pm1b_event_block;
-    struct acpi_dd_generic_address_structure x_pm1a_control_block;
-    struct acpi_dd_generic_address_structure x_pm1b_control_block;
-    struct acpi_dd_generic_address_structure x_pm2_control_block;
-    struct acpi_dd_generic_address_structure x_pm_timer_block;
-    struct acpi_dd_generic_address_structure x_gpe0_block;
-    struct acpi_dd_generic_address_structure x_gpe1_block;
+    struct odi_acpi_dd_generic_address_structure x_pm1a_event_block;
+    struct odi_acpi_dd_generic_address_structure x_pm1b_event_block;
+    struct odi_acpi_dd_generic_address_structure x_pm1a_control_block;
+    struct odi_acpi_dd_generic_address_structure x_pm1b_control_block;
+    struct odi_acpi_dd_generic_address_structure x_pm2_control_block;
+    struct odi_acpi_dd_generic_address_structure x_pm_timer_block;
+    struct odi_acpi_dd_generic_address_structure x_gpe0_block;
+    struct odi_acpi_dd_generic_address_structure x_gpe1_block;
 } __attribute__((packed));
 
 #define ACPI_DD_LICENSE    ODI_LICENSE_TYPE_MIT
