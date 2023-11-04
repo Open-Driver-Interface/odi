@@ -109,7 +109,7 @@ u64 odi_close(odi_device_t device){
 }
 
 //Debug
-void odi_list_devices(void) {
+void odi_debug_list_devices(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI LIST DEVICES REQUEST\n");
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         struct odi_device_info * device = odi_device_getall(i);
@@ -126,7 +126,7 @@ void odi_list_devices(void) {
     odi_debug_flush(ODI_DTAG_INFO);
 }
 
-void odi_list_drivers(void) {
+void odi_debug_list_drivers(void) {
     odi_debug_append(ODI_DTAG_INFO, "ODI LIST DRIVERS REQUEST\n");
     for (int i = 0; i < ODI_MAX_MAJORS; i++) {
         struct odi_driver_info * driver = odi_driver_get(i);

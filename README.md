@@ -22,6 +22,8 @@ OpenDriverInterface is a comprehensive framework designed for OS development hob
 
 To get started with OpenDriverInterface, follow these simple steps:
 
+0. Install tree, make, gcc, nasm, qemu, fdisk, gdisk, and mtools.
+
 1. Clone the OpenDriverInterface repository from [GitHub](https://github.com/Open-Driver-Interface/odi).
 
 2. Check out the extensive documentation in the `docs` directory. It provides insights into the framework's architecture and usage.

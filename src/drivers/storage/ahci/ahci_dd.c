@@ -54,7 +54,7 @@ u64 _ahci_dd_read (void * self, void* iobuff, void* control, u64 read_size, u64 
     u64 i;
     for (i = 0; i < read_size; i++) {
         if (!read_port(port, read_offset+i, 1)) break;
-        odi_dep_memcpy(iobuff + (512*i), port->buffer, 512);
+        odi_dep_memcpy(iobuff + (512*i), port->vbuffer, 512);
     }
     return i;
 }
@@ -73,7 +73,7 @@ u64 _ahci_dd_write (void * self, void* iobuff, void* control, u64 write_size, u6
 
     u64 i;
     for (i = 0; i < write_size; i++) {
-        odi_dep_memcpy(port->buffer, iobuff + (512*i), 512);
+        odi_dep_memcpy(port->vbuffer, iobuff + (512*i), 512);
         if (!write_port(port, write_offset+i, 1)) break;
     }
 
@@ -91,7 +91,7 @@ void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) 
     switch (operation) {
         case AHCI_IOCTL_ATAPI_IDENTIFY: {
             identify(port);
-            odi_dep_memcpy(iobuff, port->buffer, 512);
+            odi_dep_memcpy(iobuff, port->vbuffer, 512);
             break;
         }
         case AHCI_IOCTL_INIT: { //TODO: Not implemented
@@ -110,7 +110,7 @@ void * _ahci_dd_ioctl (void * self, void* iobuff, void* control, u64 operation) 
         }
         case AHCI_IOCTL_GET_SECTOR_COUNT: {
             identify(port);
-            struct ahci_sata_ident * sident = (struct ahci_sata_ident*) port->buffer;
+            struct ahci_sata_ident * sident = (struct ahci_sata_ident*) port->vbuffer;
             *(u64*)iobuff = sident->CurrentSectorCapacity;
             return (void*)sident->CurrentSectorCapacity;
         }
@@ -140,7 +140,7 @@ u64 _ahci_dd_read_atapi (void * self, void* iobuff, void* control, u64 read_size
     if (!read_atapi_port(port, read_offset, read_size))
         return 0;
 
-    odi_dep_memcpy(iobuff, port->buffer, 512*read_size);
+    odi_dep_memcpy(iobuff, port->vbuffer, 512*read_size);
 
     return read_size;
 }

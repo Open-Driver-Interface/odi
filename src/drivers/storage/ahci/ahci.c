@@ -340,26 +340,29 @@ void port_start_command(struct ahci_port* port) {
 void configure_port(struct ahci_port* port) {
     port_stop_command(port);
 
-    void * new_base = odi_dep_request_current_page();
-    port->hba_port->command_list_base = (u32)(u64)new_base;
-    port->hba_port->command_list_base_upper = (u32)((u64)new_base >> 32);
-    odi_dep_memset(odi_dep_get_virtual_address(new_base), 0, 1024);
+    void * physical_base = odi_dep_request_page();
+    void * new_base = odi_dep_get_virtual_address(physical_base);
+    port->hba_port->command_list_base = (u32)(u64)physical_base;
+    port->hba_port->command_list_base_upper = (u32)((u64)physical_base >> 32);
+    odi_dep_memset(new_base, 0, 1024);
 
-    void * new_fis_base = odi_dep_request_current_page();
-    port->hba_port->fis_base_address = (u32)(u64)new_fis_base;
-    port->hba_port->fis_base_address_upper = (u32)((u64)new_fis_base >> 32);
-    odi_dep_memset(odi_dep_get_virtual_address(new_fis_base), 0, 256);
+    void * new_fis_physical_base = odi_dep_request_page();
+    void * new_fis_base = odi_dep_get_virtual_address(new_fis_physical_base);
+    port->hba_port->fis_base_address = (u32)(u64)new_fis_physical_base;
+    port->hba_port->fis_base_address_upper = (u32)((u64)new_fis_physical_base >> 32);
+    odi_dep_memset(new_fis_base, 0, 256);
 
     struct hba_command_header* command_header = (struct hba_command_header*)odi_dep_get_virtual_address((void*)((u64)port->hba_port->command_list_base + ((u64) port->hba_port->command_list_base_upper << 32)));
 
     for (int i = 0; i < 32; i++) {
         command_header[i].prdt_length = 8;
 
-        void * cmd_table_address = odi_dep_request_current_page();
-        u64 address = (u64)cmd_table_address + (i << 8);
+        void * cmd_table_physical_address = odi_dep_request_current_page();
+        void * cmd_table_address = odi_dep_get_virtual_address(cmd_table_physical_address);
+        u64 address = (u64)cmd_table_physical_address + (i << 8);
         command_header[i].command_table_base_address = (u32)(u64)address;
         command_header[i].command_table_base_address_upper = (u32)((u64)address >> 32);
-        odi_dep_memset(odi_dep_get_virtual_address(cmd_table_address), 0, 256);
+        odi_dep_memset(cmd_table_address, 0, 256);
     }
 
     port_start_command(port);
@@ -414,8 +417,9 @@ void init_ahci(struct hba_memory* abar, struct ahci_port* ahci_ports, u8 * port_
     for (int i = 0; i < *port_count; i++) {
         struct ahci_port* port = &ahci_ports[i];
         configure_port(port);
-        port->buffer = (u8*)odi_dep_request_current_page();
-        odi_dep_memset(odi_dep_get_virtual_address(port->buffer), 0, ODI_DEP_PAGE_SIZE);
+        port->buffer = (u8*)odi_dep_request_page();
+        port->vbuffer = odi_dep_get_virtual_address(port->buffer);
+        odi_dep_memset(port->vbuffer, 0, ODI_DEP_PAGE_SIZE);
     }
 
 }

@@ -2,9 +2,10 @@
 #include "debug.h"
 #include "device.h"
 #include "driver.h"
+#include "../config.h"
 
-#ifdef ODI_DRIVERS_MISC_ACPI
-#include "../drivers/misc/acpi_dd.h"
+#ifdef ODI_AUTOCONF_DEPS_MISC_ACPI
+#include "../drivers/misc/acpi/acpi_dd.h"
 #endif
 
 #ifdef ODI_AUTOCONF_DEPS_BUS_PCI
@@ -40,7 +41,7 @@ void odi_autoconf_pci_scan_callback(struct pci_dd_device_header* device, u32 bas
 }
 
 void odi_autoconf_scan_pci(void * rsdp) {
-#ifndef ODI_DRIVERS_MISC_ACPI
+#ifndef ODI_AUTOCONF_DEPS_MISC_ACPI
     odi_debug_append(ODI_DTAG_INFO, "ODI_AUTOCONF_SCAN: ACPI BUS DRIVER INCLUDED\n");
     return;
 #else
@@ -52,16 +53,16 @@ void odi_autoconf_scan_pci(void * rsdp) {
 
     ((struct odi_driver_functions*)acpi->functions)->ioctl(acpi, 0x0, rsdp, ACPI_DD_IOCTL_INIT);
 
-    struct acpi_dd_mcfg_header * mcfg = ((struct odi_driver_functions*)acpi->functions)->ioctl(acpi, 0x0, rsdp, ACPI_DD_IOCTL_GET_MCFG);
+    struct odi_acpi_dd_mcfg_header * mcfg = ((struct odi_driver_functions*)acpi->functions)->ioctl(acpi, 0x0, rsdp, ACPI_DD_IOCTL_GET_MCFG);
     if (mcfg == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "ODI_AUTOCONF_SCAN: ACPI BUS DRIVER CANT GET MCFG\n");
         return;
     }
-
+#endif
 #ifndef ODI_AUTOCONF_DEPS_BUS_PCI
     odi_debug_append(ODI_DTAG_ERROR, "ODI_AUTOCONF_SCAN: PCI BUS DRIVER NOT INCLUDED\n");
     return;
-#endif
+#else
     struct odi_driver_info * pci = init_pci();
     if (pci == 0) {
         odi_debug_append(ODI_DTAG_ERROR, "ODI_AUTOCONF_SCAN: PCI BUS DRIVER CANT START\n");
@@ -69,8 +70,8 @@ void odi_autoconf_scan_pci(void * rsdp) {
     }
 
     struct pci_ioctl_scan_bus_control scan_control = {
-        .trail = (void*)((u64)mcfg + sizeof(struct acpi_dd_mcfg_header)),
-        .devconf_size = (mcfg->length - sizeof(struct acpi_dd_mcfg_header))
+        .trail = (void*)((u64)mcfg + sizeof(struct odi_acpi_dd_mcfg_header)),
+        .devconf_size = (mcfg->length - sizeof(struct odi_acpi_dd_mcfg_header))
     };
 
     ((struct odi_driver_functions*)pci->functions)->ioctl(pci, (void*)odi_autoconf_pci_scan_callback, &scan_control, PCI_IOCTL_SCAN_BUS);

@@ -34,15 +34,15 @@ void * dd_acpi_ioctl (void * self, void* iobuff, void* control, u64 operation) {
             break;
         }
         case ACPI_DD_IOCTL_GET_MCFG: {
-            return (struct acpi_dd_mcfg_header*)get_acpi_mcfg(control);
+            return (struct odi_acpi_dd_mcfg_header*)get_acpi_mcfg(control);
             break;
         }
         case ACPI_DD_IOCTL_GET_MADT: {
-            return (struct acpi_dd_madt_header*)get_acpi_madt(control);
+            return (struct odi_acpi_dd_madt_header*)get_acpi_madt(control);
             break;
         }
         case ACPI_DD_IOCTL_GET_FADT: {
-            return (struct acpi_dd_fadt_header*)get_acpi_fadt(control);
+            return (struct odi_acpi_dd_fadt_header*)get_acpi_fadt(control);
             break;
         }
 

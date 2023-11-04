@@ -27,6 +27,9 @@ char* odi_dep_strncpy(char *dest, const char *src, int n);
 void* odi_dep_malloc(int size);
 void odi_dep_free(void* ptr);
 
+//Physical memory management.
+void * odi_dep_request_page(void);
+
 //Virtual memory management.
 void* odi_dep_get_free_contiguous_virtual_address(size_t size);
 //Here the current makes reference to the current process (pml4).

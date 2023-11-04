@@ -100,6 +100,7 @@ struct ahci_port {
     struct hba_memory * abar;
     enum port_type port_type;
     u8 *buffer;
+    u8 *vbuffer;
     u8 port_number;
 };
 
