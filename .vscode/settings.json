@@ -1,13 +1,16 @@
 {
-    "files.associations": {
-        "device.h": "c",
-        "autoconf.h": "c",
-        "types.h": "c",
-        "basic_dd.h": "c",
-        "array": "c",
-        "string": "c",
-        "string_view": "c",
-        "numbers": "c",
-        "pci_dd.h": "c"
-    }
+  "files.associations": {
+    "device.h": "c",
+    "autoconf.h": "c",
+    "types.h": "c",
+    "basic_dd.h": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c",
+    "numbers": "c",
+    "pci_dd.h": "c",
+    "serial.h": "c",
+    "driver.h": "c",
+    "stddef.h": "c"
+  }
 }
