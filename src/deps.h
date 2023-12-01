@@ -57,4 +57,10 @@ void odi_dep_insw(u16 port, u8* buffer, int count);
 void odi_dep_outsw(u16 port, u8 *buffer, int count);
 void odi_dep_io_wait(void);
 
+// Hook management
+void odi_dep_hook_interrupt(u8 interrupt, void* handler, u8 dynamic);
+void odi_dep_unhook_interrupt(u8 interrupt, u8 dynamic);
+void odi_dep_raise_interrupt(u8 interrupt);
+void odi_dep_pic_eoi();
+
 #endif
